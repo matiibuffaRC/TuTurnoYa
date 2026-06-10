@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Cliente {
+  id       Int     @id @default(autoincrement())
+  nombre   String
+  apellido String
+  email    String  @unique
+  turnos   Turno[]
+}
+
+model Sucursal {
+  id              Int       @id @default(autoincrement())
+  nombre          String
+  direccion       String
+  telefono        String
+  horarioApertura String
+  horarioCierre   String
+  barberos        Barbero[]
+}
+
+model Barbero {
+  id         Int      @id @default(autoincrement())
+  nombre     String
+  apellido   String
+  telefono   String
+  activo     Boolean  @default(true)
+  sucursalId Int
+  sucursal   Sucursal @relation(fields: [sucursalId], references: [id])
+  turnos     Turno[]
+}
+
+model Servicio {
+  id       Int     @id @default(autoincrement())
+  tipo     String
+  precio   Float
+  duracion Int
+  turnos   Turno[]
+}
+
+model Turno {
+  id         Int      @id @default(autoincrement())
+  fecha      String
+  hora       String
+  estado     String   @default("activo")
+  clienteId  Int
+  cliente    Cliente  @relation(fields: [clienteId], references: [id])
+  barberoId  Int
+  barbero    Barbero  @relation(fields: [barberoId], references: [id])
+  servicioId Int
+  servicio   Servicio @relation(fields: [servicioId], references: [id])
+  creadoEn   DateTime @default(now())
+}
