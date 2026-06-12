@@ -67,7 +67,7 @@ export default function ReservarTurno() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="max-w-2xl mx-auto px-4 py-10 montserrat-alternates">
       <h1 className="text-3xl font-bold text-slate-800 mb-2">Reservar turno</h1>
       <p className="text-slate-500 mb-8">Seguí los pasos para reservar tu turno.</p>
 

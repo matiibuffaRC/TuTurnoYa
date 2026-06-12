@@ -25,7 +25,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-white/5">
+            <nav className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-white/5 montserrat-alternates">
                 <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
                     <Link to="/" className="text-white text-xl font-bold tracking-tight transition-opacity duration-300 hover:opacity-80">
                         TuTurnoYa
@@ -62,7 +62,7 @@ export default function Navbar() {
 
             {/* Drawer desde la izquierda */}
             <aside
-                className={`fixed top-0 left-0 z-50 h-full w-72 bg-slate-900 border-r border-white/10 shadow-2xl transition-transform duration-300 ease-out md:hidden ${
+                className={`montserrat-alternates fixed top-0 left-0 z-50 h-full w-72 bg-slate-900 border-r border-white/10 shadow-2xl transition-transform duration-300 ease-out md:hidden ${
                     abierto
                         ? 'translate-x-0'
                         : '-translate-x-full'
@@ -81,7 +81,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Links drawer */}
-                <nav className="flex flex-col gap-2 p-4">
+                <nav className="flex flex-col gap-2 p-4 ">
                     {LINKS.map(({ to, label }) => (
                         <Link
                             key={to}
