@@ -5,18 +5,20 @@ import Servicios from './pages/Servicios'
 import MisTurnos from './pages/MisTurnos'
 
 function App() {
-  return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-slate-50">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<ReservarTurno />} />
-          <Route path="/servicios" element={<Servicios />} />
-          <Route path="/mis-turnos" element={<MisTurnos />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
-  )
+    return (
+        <BrowserRouter>
+            <div className="min-h-screen bg-slate-50">
+                {/* Headear */}
+                <Navbar />
+                {/* Diferentes pages */}
+                <Routes>
+                    <Route path="/" element={<ReservarTurno />} />
+                    <Route path="/servicios" element={<Servicios />} />
+                    <Route path="/mis-turnos" element={<MisTurnos />} />
+                </Routes>
+            </div>
+        </BrowserRouter>
+    )
 }
 
 export default App
