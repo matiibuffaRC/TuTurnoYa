@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getSucursales, getBarberos, getServicios, getDisponibles, crearTurno } from '../../api'
+
+// Import componentes
 import PasoIndicador from './PasoIndicador'
 import PasoSucursal from './PasoSucursal'
 import PasoFecha from './PasoFecha'
@@ -68,8 +70,8 @@ export default function ReservarTurno() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 montserrat-alternates">
-      <h1 className="text-3xl font-bold text-slate-800 mb-2">Reservar turno</h1>
-      <p className="text-slate-500 mb-8">Seguí los pasos para reservar tu turno.</p>
+      <h1 className="text-center text-3xl font-bold text-slate-800 mb-2">Reservar turno</h1>
+      <p className="text-center text-slate-500 mb-8">Seguí los pasos para reservar tu turno.</p>
 
       <PasoIndicador pasoActual={paso} />
 

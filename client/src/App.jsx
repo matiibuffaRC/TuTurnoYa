@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Navbar from './components/Navbar'
+import Navbar from './components/Header/Navbar';
 import ReservarTurno from './pages/ReservarTurno'
 import Servicios from './pages/Servicios'
 import MisTurnos from './pages/MisTurnos'

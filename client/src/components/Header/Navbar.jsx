@@ -42,7 +42,7 @@ export default function Navbar() {
                     </div>
 
                     {/* Botón hamburguesa */}
-                    <button onClick={toggleMenu} aria-label={abierto ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={abierto} className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-white/10 transition-colors">
+                    <button onClick={toggleMenu} aria-label={abierto ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={abierto} className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg cursor-pointer transition-colors">
                         <span className={`block w-5 h-0.5 bg-white rounded-full transition-all duration-300 ${ abierto ? 'translate-y-1 rotate-45' : '-translate-y-1' }`}/>
                         <span className={`block w-5 h-0.5 bg-white rounded-full transition-all duration-300 ${ abierto ? 'opacity-0 scale-x-0' : 'opacity-100 scale-x-100' }`}/>
                         <span className={`block w-5 h-0.5 bg-white rounded-full transition-all duration-300 ${ abierto ? '-translate-y-1 -rotate-45' : 'translate-y-1' }`}/>
@@ -69,12 +69,12 @@ export default function Navbar() {
                 }`}
             >
                 <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
-                    <span className="text-white text-lg font-semibold">
+                    <span className="text-white text-lg font-semibold select-none">
                         TuTurnoYa
                     </span>
 
-                    <button onClick={cerrarMenu} aria-label="Cerrar menú" className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all" >
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" >
+                    <button onClick={cerrarMenu} aria-label="Cerrar menú" className="cursor-pointer p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all" >
+                        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" >
                             <path d="M4 4L16 16M16 4L4 16" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
                         </svg>
                     </button>

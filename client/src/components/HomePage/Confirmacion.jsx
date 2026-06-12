@@ -18,7 +18,7 @@ export default function Confirmacion({ turno, onNuevoTurno }) {
 
       <button
         onClick={onNuevoTurno}
-        className="bg-slate-800 text-white px-6 py-2 rounded-lg hover:bg-slate-700 transition-colors"
+        className="bg-slate-800 text-white cursor-pointer px-6 py-2 rounded-full hover:bg-slate-700 transition-colors"
       >
         Reservar otro turno
       </button>

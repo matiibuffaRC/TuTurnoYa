@@ -25,13 +25,13 @@ export default function PasoDatos({ form, error, onChange, onAtras, onConfirmar 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <div className="flex gap-3 pt-2">
-        <button onClick={onAtras} className="flex-1 border-2 border-slate-200 text-slate-700 py-3 rounded-xl font-semibold hover:border-slate-400 transition-colors">
+        <button onClick={onAtras} className="flex-1 border-2 border-slate-200 text-slate-700 py-3 rounded-full font-semibold hover:border-slate-400 transition-colors">
           Atrás
         </button>
         <button
           disabled={!completo}
           onClick={onConfirmar}
-          className="flex-1 bg-slate-800 text-white py-3 rounded-xl font-semibold disabled:opacity-40 hover:bg-slate-700 transition-colors"
+          className="flex-1 bg-slate-800 text-white py-3 rounded-full font-semibold disabled:opacity-40 hover:bg-slate-700 transition-colors"
         >
           Confirmar turno
         </button>

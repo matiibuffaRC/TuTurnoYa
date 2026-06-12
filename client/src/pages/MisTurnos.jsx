@@ -32,7 +32,7 @@ export default function MisTurnos() {
           onChange={(e) => setEmail(e.target.value)}
           className="flex-1 border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-400" />
         <button type="submit"
-          className="bg-slate-800 text-white px-6 py-2 rounded-lg font-medium hover:bg-slate-700 transition-colors">
+          className="cursor-pointer bg-slate-800 text-white px-6 py-2 rounded-lg font-medium hover:bg-slate-700 transition-colors">
           {loading ? 'Buscando...' : 'Buscar'}
         </button>
       </form>
@@ -58,7 +58,7 @@ export default function MisTurnos() {
                 </p>
               </div>
               <button onClick={() => cancelar(t.id)}
-                className="text-sm text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-3 py-1 rounded-lg transition-colors">
+                className="text-sm text-white font-bold bg-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-4 py-1 rounded-full transition-colors">
                 Cancelar
               </button>
             </div>

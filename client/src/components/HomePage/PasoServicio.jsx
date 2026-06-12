@@ -8,7 +8,7 @@ export default function PasoServicio({ servicios, form, onServicio, onAtras, onS
             <button
               key={s.id}
               onClick={() => onServicio(String(s.id))}
-              className={`flex justify-between items-center px-5 py-4 rounded-xl border-2 transition-colors ${form.servicioId === String(s.id) ? 'border-slate-800 bg-slate-50' : 'border-slate-200 hover:border-slate-400'}`}
+              className={`cursor-pointer flex justify-between items-center px-5 py-4 rounded-xl border-2 transition-colors ${form.servicioId === String(s.id) ? 'border-slate-800 bg-slate-50' : 'border-slate-200 hover:border-slate-400'}`}
             >
               <div className="text-left">
                 <span className="font-semibold text-slate-700 block">{s.tipo}</span>
@@ -21,13 +21,13 @@ export default function PasoServicio({ servicios, form, onServicio, onAtras, onS
       </div>
 
       <div className="flex gap-3">
-        <button onClick={onAtras} className="flex-1 border-2 border-slate-200 text-slate-700 py-3 rounded-xl font-semibold hover:border-slate-400 transition-colors">
+        <button onClick={onAtras} className="cursor-pointer flex-1 border-2 border-slate-200 text-slate-700 py-3 rounded-full font-semibold hover:border-slate-400 transition-colors">
           Atrás
         </button>
         <button
           disabled={!form.servicioId}
           onClick={onSiguiente}
-          className="flex-1 bg-slate-800 text-white py-3 rounded-xl font-semibold disabled:opacity-40 hover:bg-slate-700 transition-colors"
+          className="cursor-pointer flex-1 bg-slate-800 text-white py-3 rounded-full font-semibold disabled:opacity-40 hover:bg-slate-700 transition-colors"
         >
           Continuar
         </button>

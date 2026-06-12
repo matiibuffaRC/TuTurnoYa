@@ -8,7 +8,7 @@ export default function PasoSucursal({ sucursales, barberos, form, onSucursal, o
             <button
               key={s.id}
               onClick={() => onSucursal(String(s.id))}
-              className={`text-left px-5 py-4 rounded-xl border-2 transition-colors ${form.sucursalId === String(s.id) ? 'border-slate-800 bg-slate-50' : 'border-slate-200 hover:border-slate-400'}`}
+              className={`text-left px-5 py-4 rounded-xl border-2 transition-colors cursor-pointer ${form.sucursalId === String(s.id) ? 'border-slate-800 bg-slate-50' : 'border-slate-200 hover:border-slate-400'}`}
             >
               <p className="font-semibold text-slate-800">{s.nombre}</p>
               <p className="text-sm text-slate-500">{s.direccion} · {s.horarioApertura} a {s.horarioCierre}</p>
@@ -25,7 +25,7 @@ export default function PasoSucursal({ sucursales, barberos, form, onSucursal, o
               <button
                 key={b.id}
                 onClick={() => onBarbero(String(b.id))}
-                className={`px-4 py-3 rounded-xl border-2 transition-colors text-center ${form.barberoId === String(b.id) ? 'border-slate-800 bg-slate-50' : 'border-slate-200 hover:border-slate-400'}`}
+                className={`px-4 py-3 cursor-pointer rounded-xl border-2 transition-colors text-center ${form.barberoId === String(b.id) ? 'border-slate-800 bg-slate-50' : 'border-slate-200 hover:border-slate-400'}`}
               >
                 <span className="text-2xl block mb-1">💈</span>
                 <span className="font-medium text-slate-700">{b.nombre} {b.apellido}</span>
@@ -38,7 +38,7 @@ export default function PasoSucursal({ sucursales, barberos, form, onSucursal, o
       <button
         disabled={!form.sucursalId || !form.barberoId}
         onClick={onSiguiente}
-        className="w-full bg-slate-800 text-white py-3 rounded-xl font-semibold disabled:opacity-40 hover:bg-slate-700 transition-colors"
+        className="w-full bg-slate-800  text-white py-3 rounded-full font-semibold disabled:opacity-40 hover:bg-slate-700 transition-colors cursor-pointer"
       >
         Continuar
       </button>
