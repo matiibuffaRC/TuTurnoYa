@@ -58,7 +58,7 @@ export default function MisTurnos() {
                 </p>
               </div>
               <button onClick={() => cancelar(t.id)}
-                className="text-sm text-white font-bold bg-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-4 py-1 rounded-full transition-colors">
+                className="cursor-pointer text-sm text-white font-bold bg-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-4 py-1 rounded-full transition-colors">
                 Cancelar
               </button>
             </div>

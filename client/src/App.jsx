@@ -1,8 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+// Import components
 import Navbar from './components/Header/Navbar';
+
+// Import pages
 import ReservarTurno from './pages/ReservarTurno'
 import Servicios from './pages/Servicios'
 import MisTurnos from './pages/MisTurnos'
+import AdminsPanel from './pages/AdminsPanel'
 
 function App() {
     return (
@@ -15,6 +20,7 @@ function App() {
                     <Route path="/" element={<ReservarTurno />} />
                     <Route path="/servicios" element={<Servicios />} />
                     <Route path="/mis-turnos" element={<MisTurnos />} />
+                    <Route path="/admins-panel" element={<AdminsPanel />}/>
                 </Routes>
             </div>
         </BrowserRouter>
