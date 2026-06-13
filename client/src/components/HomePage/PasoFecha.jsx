@@ -43,7 +43,7 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
           disabled={!form.fecha || !form.hora}
           onClick={onSiguiente}
           className="cursor-pointer flex-1 bg-slate-800 text-white py-3 rounded-full font-semibold disabled:opacity-40 hover:bg-slate-700 transition-colors"
-        >
+        > 
           Continuar
         </button>
       </div>

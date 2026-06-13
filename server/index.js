@@ -8,13 +8,13 @@ const prisma = new PrismaClient()
 app.use(cors())
 app.use(express.json())
 
-// ── Sucursales ──────────────────────────────────────────────
+// ── Obtenemos las sucursales 
 app.get('/sucursales', async (req, res) => {
   const sucursales = await prisma.sucursal.findMany()
   res.json(sucursales)
 })
 
-// ── Barberos ────────────────────────────────────────────────
+// ── Obtenemos a los barberos 
 app.get('/barberos', async (req, res) => {
   const { sucursalId } = req.query
   const where = { activo: true }
@@ -23,19 +23,21 @@ app.get('/barberos', async (req, res) => {
   res.json(barberos)
 })
 
-// ── Servicios ───────────────────────────────────────────────
+// ── Obtenemos los servicios 
 app.get('/servicios', async (req, res) => {
   const servicios = await prisma.servicio.findMany()
   res.json(servicios)
 })
 
-// ── Turnos disponibles ──────────────────────────────────────
+// ── Turnos disponibles 
 const HORARIOS = [
   '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '12:00', '12:30', '14:00', '14:30', '15:00', '15:30',
-  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
+  '12:00', '16:00', '16:30', '17:00', '17:30', '18:00', 
+  '18:30', '19:00', '19:30', '20:00', '20:30'
 ]
 
+// Pasamos como parametro el id del babero para obtener sus turnos
+// y buscamos los que no están ocupados
 app.get('/turnos/disponibles', async (req, res) => {
   const { barberoId, fecha } = req.query
   if (!barberoId || !fecha) {
@@ -50,7 +52,7 @@ app.get('/turnos/disponibles', async (req, res) => {
   res.json(disponibles)
 })
 
-// ── Turnos por email ────────────────────────────────────────
+// ── Buscamos los turnos por email 
 app.get('/turnos', async (req, res) => {
   const { email } = req.query
   if (!email) return res.status(400).json({ error: 'Falta el parámetro email' })
@@ -66,7 +68,7 @@ app.get('/turnos', async (req, res) => {
   res.json(turnos)
 })
 
-// ── Crear turno ─────────────────────────────────────────────
+// ── Creamos un turno 
 app.post('/turnos', async (req, res) => {
   const { fecha, hora, nombre, apellido, email, barberoId, servicioId } = req.body
 
@@ -102,7 +104,7 @@ app.post('/turnos', async (req, res) => {
   res.status(201).json(turno)
 })
 
-// ── Cancelar turno ──────────────────────────────────────────
+// ── Cancelar turno 
 app.delete('/turnos/:id', async (req, res) => {
   const id = Number(req.params.id)
   const turno = await prisma.turno.findUnique({ where: { id } })
