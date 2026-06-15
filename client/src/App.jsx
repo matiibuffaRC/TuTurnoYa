@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 // Import components
 import Navbar from './components/Header/Navbar';
+import Footer from './components/Footer/Footer'
 
 // Import pages
 import ReservarTurno from './pages/ReservarTurno'
@@ -22,6 +23,7 @@ function App() {
                     <Route path="/mis-turnos" element={<MisTurnos />} />
                     <Route path="/admins-panel" element={<AdminsPanel />}/>
                 </Routes>
+                <Footer></Footer>
             </div>
         </BrowserRouter>
     )

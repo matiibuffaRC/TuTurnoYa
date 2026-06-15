@@ -37,7 +37,7 @@ const AdminsPanel = () => {
 
     return (
         // Contenedor principal adaptable: pantalla dividida en desktop
-        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-slate-50 p-4 md:p-10">
+        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-slate-50 p-4 md:p-10 montserrat-alternates">
             
             <div className="max-w-5xl w-full bg-white rounded-4xl shadow-[0_20px_70px_-15px_rgba(38,46,65,0.12)] border border-slate-100 overflow-hidden grid md:grid-cols-12 min-h-150">
                 
@@ -70,29 +70,27 @@ const AdminsPanel = () => {
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-amber-400/20 flex items-center justify-center text-amber-400 font-bold">✓</div>
                                     <div>
-                                        <p className="text-xs text-slate-400">Turnos Completados hoy</p>
-                                        <p className="text-sm font-bold">14 Clientes atendidos</p>
+                                        <p className="text-xs text-slate-400">Clientes satisfechos</p>
+                                        <p className="text-sm font-bold">14 barberos con nuestro servicio</p>
                                     </div>
                                 </div>
-                                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md">+12%</span>
                             </div>
 
                             <div className="bg-white/4 border border-white/10 p-4 rounded-2xl flex items-center justify-between transform hover:translate-x-2 transition-transform duration-300 delay-75">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-blue-400/20 flex items-center justify-center text-blue-400 text-lg">🕒</div>
                                     <div>
-                                        <p className="text-xs text-slate-400">Próximo turno en lista</p>
-                                        <p className="text-sm font-bold">Marcos Benítez — 17:30hs</p>
+                                        <p className="text-xs text-slate-400">La seguridad de tu gestión</p>
+                                        <p className="text-sm font-bold">Más de 3 años acompañanadote</p>
                                     </div>
                                 </div>
-                                <span className="text-xs font-medium text-slate-400 bg-white/5 px-2 py-1 rounded-md">Corte + Barba</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Footer del lado izquierdo */}
                     <p className="text-xs text-slate-400 relative z-10">
-                        © {new Date().getFullYear()} Sistema de Gestión de Estética.
+                        © {new Date().getFullYear()} TuTurnoYa.
                     </p>
                 </div>
 
@@ -102,13 +100,19 @@ const AdminsPanel = () => {
                     
                     {/* Header exclusivo para móvil (oculto en desktop) */}
                     <div className="block md:hidden text-center mb-8">
-                        <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase">
+                        <h2 className="text-5xl font-black text-slate-900 tracking-tight pb-1">
+                            TuTurnoYa
+                        </h2>
+                        <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">
                             Portal Peluqueros
                         </h2>
                     </div>
 
                     {/* Título de bienvenida en Desktop */}
                     <div className="hidden md:block mb-8">
+                        <h2 className="text-5xl font-black text-slate-900 tracking-tight pb-2">
+                            TuTurnoYa
+                        </h2>
                         <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase">
                             ¡Hola de nuevo!
                         </h2>
