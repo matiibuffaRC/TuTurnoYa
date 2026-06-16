@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 
 // Importar rutas
+const authRoutes = require('./routes/auth')
 const sucursalesRoutes = require('./routes/sucursales')
 const barberosRoutes = require('./routes/barberos')
 const serviciosRoutes = require('./routes/servicios')
@@ -21,6 +22,7 @@ app.get('/health', (req, res) => {
 })
 
 // Rutas
+app.use('/auth', authRoutes)
 app.use('/sucursales', sucursalesRoutes)
 app.use('/barberos', barberosRoutes)
 app.use('/servicios', serviciosRoutes)

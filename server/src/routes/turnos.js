@@ -63,6 +63,10 @@ router.get(
   turnosController.listarTurnosDisponibles
 )
 
+// GET /turnos/barbero/:id - Turnos de un barbero por fecha (requiere token)
+const { verificarToken } = require('../middlewares/authMiddleware')
+router.get('/barbero/:id', verificarToken, turnosController.listarTurnosBarbero)
+
 // GET /turnos/:id - Obtener por ID
 router.get('/:id', turnosController.obtenerTurno)
 

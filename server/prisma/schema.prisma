@@ -30,6 +30,8 @@ model Barbero {
   nombre     String
   apellido   String
   telefono   String
+  email      String   @unique
+  password   String
   activo     Boolean  @default(true)
   sucursalId Int
   sucursal   Sucursal @relation(fields: [sucursalId], references: [id])
