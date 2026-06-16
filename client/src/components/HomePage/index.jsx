@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { getSucursales, getBarberos, getServicios, getDisponibles, crearTurno } from '../../api'
 
-// Import componentes
 import PasoIndicador from './PasoIndicador'
 import PasoSucursal from './PasoSucursal'
-import PasoFecha from './PasoFecha'
 import PasoServicio from './PasoServicio'
+import PasoFecha from './PasoFecha'
 import PasoDatos from './PasoDatos'
 import Confirmacion from './Confirmacion'
 
@@ -35,16 +34,25 @@ export default function ReservarTurno() {
     setBarberos(await getBarberos(id))
   }
 
-  const handleBarbero = async (id) => {
+  const handleBarbero = (id) => {
     set('barberoId', id)
     set('hora', '')
-    if (form.fecha) setHorarios(await getDisponibles(id, form.fecha))
+    set('fecha', '')
+    setHorarios([])
   }
 
   const handleFecha = async (fecha) => {
     set('fecha', fecha)
     set('hora', '')
-    if (form.barberoId) setHorarios(await getDisponibles(form.barberoId, fecha))
+    if (form.barberoId && form.servicioId) {
+      setHorarios(await getDisponibles(form.barberoId, fecha, form.servicioId))
+    }
+  }
+
+  const handleServicio = () => {
+    set('hora', '')
+    set('fecha', '')
+    setHorarios([])
   }
 
   const handleConfirmar = async () => {
@@ -69,50 +77,59 @@ export default function ReservarTurno() {
   }
 
   return (
-    <div className="flex flex-col justify-center min-h-[calc(100dvh-100px)] max-w-2xl mx-auto px-4 py-20 montserrat-alternates">
-      <h1 className="text-center text-3xl font-bold text-slate-800 mb-2">Reservar turno</h1>
-      <p className="text-center text-slate-500 mb-8">Seguí los pasos para reservar tu turno.</p>
+    <div className="min-h-[calc(100dvh-80px)] bg-[#f7f4ef] montserrat-alternates">
+      <div className="max-w-xl mx-auto px-5 py-14">
 
-      <PasoIndicador pasoActual={paso} />
+        <div className="mb-10">
+          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700 mb-2">Reserva online</p>
+          <h1 className="text-3xl font-black text-[#1e2535] leading-tight">Reservar turno</h1>
+          <p className="text-[#8a8070] mt-1.5 text-sm">Seguí los pasos para confirmar tu reserva.</p>
+        </div>
 
-      {paso === 0 && (
-        <PasoSucursal
-          sucursales={sucursales}
-          barberos={barberos}
-          form={form}
-          onSucursal={handleSucursal}
-          onBarbero={handleBarbero}
-          onSiguiente={() => setPaso(1)}
-        />
-      )}
-      {paso === 1 && (
-        <PasoFecha
-          form={form}
-          horarios={horarios}
-          onFecha={handleFecha}
-          onHora={(h) => set('hora', h)}
-          onAtras={() => setPaso(0)}
-          onSiguiente={() => setPaso(2)}
-        />
-      )}
-      {paso === 2 && (
-        <PasoServicio
-          servicios={servicios}
-          form={form}
-          onServicio={(id) => set('servicioId', id)}
-          onAtras={() => setPaso(1)}
-          onSiguiente={() => setPaso(3)}
-        />
-      )}
-      {paso === 3 && (
-        <PasoDatos
-          form={form}
-          error={error}
-          onChange={set}
-          onAtras={() => setPaso(2)}
-          onConfirmar={handleConfirmar}
-        />
-      )}
+        <PasoIndicador pasoActual={paso} />
+
+        <div className="bg-white rounded-2xl border border-[#e8e2d8] shadow-sm p-7">
+          {paso === 0 && (
+            <PasoSucursal
+              sucursales={sucursales}
+              barberos={barberos}
+              form={form}
+              onSucursal={handleSucursal}
+              onBarbero={handleBarbero}
+              onSiguiente={() => setPaso(1)}
+            />
+          )}
+          {paso === 1 && (
+            <PasoServicio
+              servicios={servicios}
+              form={form}
+              onServicio={(id) => { set('servicioId', id); handleServicio() }}
+              onAtras={() => setPaso(0)}
+              onSiguiente={() => setPaso(2)}
+            />
+          )}
+          {paso === 2 && (
+            <PasoFecha
+              form={form}
+              horarios={horarios}
+              onFecha={handleFecha}
+              onHora={(h) => set('hora', h)}
+              onAtras={() => setPaso(1)}
+              onSiguiente={() => setPaso(3)}
+            />
+          )}
+          {paso === 3 && (
+            <PasoDatos
+              form={form}
+              error={error}
+              onChange={set}
+              onAtras={() => setPaso(2)}
+              onConfirmar={handleConfirmar}
+            />
+          )}
+        </div>
+
+      </div>
     </div>
   )
 }

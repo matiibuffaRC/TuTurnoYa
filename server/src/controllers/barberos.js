@@ -141,10 +141,30 @@ const eliminarBarbero = async (req, res) => {
   }
 }
 
+// Toggle agenda abierta/cerrada
+const toggleAgenda = async (req, res) => {
+  try {
+    const { id } = req.params
+    const barbero = await prisma.barbero.findUnique({ where: { id: Number(id) } })
+    if (!barbero) return res.status(404).json({ error: 'Barbero no encontrado' })
+
+    const barberoActualizado = await prisma.barbero.update({
+      where: { id: Number(id) },
+      data: { agendaAbierta: !barbero.agendaAbierta },
+      include: { sucursal: true },
+    })
+    const { password: _, ...sinPassword } = barberoActualizado
+    res.json(sinPassword)
+  } catch {
+    res.status(500).json({ error: 'Error al cambiar estado de la agenda' })
+  }
+}
+
 module.exports = {
   listarBarberos,
   obtenerBarbero,
   crearBarbero,
   actualizarBarbero,
   eliminarBarbero,
+  toggleAgenda,
 }

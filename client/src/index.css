@@ -1,11 +1,26 @@
 @import "tailwindcss";
 
-/* Google fonts */
-
 .montserrat-alternates {
-    font-family: "Montserrat Alternates", sans-serif;
+  font-family: "Montserrat Alternates", sans-serif;
 }
 
-.open-sans{
-    font-family: "Open Sans", sans-serif;
+.open-sans {
+  font-family: "Open Sans", sans-serif;
+}
+
+:root {
+  --brand-dark: #1e2535;
+  --brand-amber: #c08b2e;
+  --warm-bg: #f7f4ef;
+  --warm-border: #e8e2d8;
+  --warm-card: #ffffff;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
 }

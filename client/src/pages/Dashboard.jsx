@@ -1,7 +1,27 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toggleAgenda } from '../api'
 
 const hoy = new Date().toISOString().split('T')[0]
+
+const IconCalendar = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+)
+
+const IconLock = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+  </svg>
+)
+
+const IconUnlock = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a9 9 0 0114 7.46"/>
+  </svg>
+)
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -9,6 +29,7 @@ export default function Dashboard() {
   const [turnos, setTurnos] = useState([])
   const [fecha, setFecha] = useState(hoy)
   const [loading, setLoading] = useState(false)
+  const [toggling, setToggling] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -39,6 +60,18 @@ export default function Dashboard() {
     fetchTurnos(barbero.id, f, localStorage.getItem('token'))
   }
 
+  const handleToggleAgenda = async () => {
+    setToggling(true)
+    const token = localStorage.getItem('token')
+    const updated = await toggleAgenda(barbero.id, token)
+    if (!updated.error) {
+      const newBarbero = { ...barbero, agendaAbierta: updated.agendaAbierta }
+      setBarbero(newBarbero)
+      localStorage.setItem('barbero', JSON.stringify(newBarbero))
+    }
+    setToggling(false)
+  }
+
   const cerrarSesion = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('barbero')
@@ -48,80 +81,116 @@ export default function Dashboard() {
   if (!barbero) return null
 
   const turnosActivos = turnos.filter(t => t.estado === 'activo')
+  const agendaAbierta = barbero.agendaAbierta !== false
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-slate-50 p-6 md:p-10">
+    <div className="min-h-[calc(100vh-80px)] bg-[#f7f4ef] montserrat-alternates p-5 md:p-10">
       <div className="max-w-4xl mx-auto">
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-black text-slate-800">
-              Hola, {barbero.nombre} 👋
-            </h1>
-            <p className="text-slate-500 mt-1">{barbero.sucursal?.nombre} · {barbero.email}</p>
+            <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700 mb-1">Panel del barbero</p>
+            <h1 className="text-2xl font-black text-[#1e2535]">Hola, {barbero.nombre}</h1>
+            <p className="text-sm text-[#8a8070] mt-0.5">{barbero.sucursal?.nombre} · {barbero.email}</p>
           </div>
-          <button onClick={cerrarSesion} className="text-sm text-slate-500 hover:text-red-500 border border-slate-200 hover:border-red-300 px-4 py-2 rounded-lg transition-colors cursor-pointer">
-            Cerrar sesión
+          <button
+            onClick={cerrarSesion}
+            className="text-xs font-semibold text-[#8a8070] border border-[#e8e2d8] hover:border-[#c8c0b0] hover:text-[#1e2535] px-4 py-2 rounded-xl transition-colors cursor-pointer"
+          >
+            Salir
           </button>
         </div>
 
-        {/* Info sucursal */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
           {[
-            { label: 'Sucursal', value: barbero.sucursal?.nombre || '—', icon: '📍' },
-            { label: 'Dirección', value: barbero.sucursal?.direccion || '—', icon: '🗺' },
-            { label: 'Horario', value: `${barbero.sucursal?.horarioApertura} a ${barbero.sucursal?.horarioCierre}`, icon: '🕐' },
+            { label: 'Sucursal', value: barbero.sucursal?.nombre || '—' },
+            { label: 'Dirección', value: barbero.sucursal?.direccion || '—' },
+            { label: 'Horario', value: `${barbero.sucursal?.horarioApertura} – ${barbero.sucursal?.horarioCierre}` },
           ].map((item) => (
-            <div key={item.label} className="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-5">
-              <p className="text-2xl mb-2">{item.icon}</p>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">{item.label}</p>
-              <p className="text-slate-800 font-bold mt-1">{item.value}</p>
+            <div key={item.label} className="bg-white rounded-xl border border-[#e8e2d8] px-5 py-4">
+              <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-1">{item.label}</p>
+              <p className="text-sm font-bold text-[#1e2535]">{item.value}</p>
             </div>
           ))}
         </div>
 
-        {/* Agenda */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-slate-800">Agenda</h2>
+        <div className={`mb-5 rounded-xl border px-5 py-4 flex items-center justify-between gap-4 ${
+          agendaAbierta ? 'bg-white border-[#e8e2d8]' : 'bg-[#1e2535] border-[#1e2535]'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+              agendaAbierta ? 'bg-green-50 text-green-700' : 'bg-white/10 text-amber-400'
+            }`}>
+              {agendaAbierta ? <IconUnlock /> : <IconLock />}
+            </div>
+            <div>
+              <p className={`text-sm font-bold ${agendaAbierta ? 'text-[#1e2535]' : 'text-white'}`}>
+                {agendaAbierta ? 'Agenda abierta' : 'Agenda cerrada'}
+              </p>
+              <p className={`text-xs mt-0.5 ${agendaAbierta ? 'text-[#8a8070]' : 'text-white/60'}`}>
+                {agendaAbierta
+                  ? 'Los clientes pueden reservar turnos contigo.'
+                  : 'No se aceptan nuevas reservas.'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleToggleAgenda}
+            disabled={toggling}
+            className={`text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap ${
+              agendaAbierta
+                ? 'bg-[#1e2535] text-white hover:bg-[#2d3748]'
+                : 'bg-white text-[#1e2535] hover:bg-[#f7f4ef]'
+            }`}
+          >
+            {toggling ? '...' : agendaAbierta ? 'Cerrar agenda' : 'Abrir agenda'}
+          </button>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-[#e8e2d8]">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-[#f0ece4]">
+            <h2 className="text-sm font-black text-[#1e2535] uppercase tracking-wider">Agenda</h2>
             <input
               type="date"
               value={fecha}
               onChange={(e) => handleFecha(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-slate-400"
+              className="border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-xs font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535] transition-all cursor-pointer"
             />
           </div>
 
           {loading && (
-            <p className="text-center text-slate-400 py-8">Cargando turnos...</p>
+            <div className="py-16 text-center text-sm text-[#8a8070]">Cargando turnos...</div>
           )}
 
           {!loading && turnosActivos.length === 0 && (
-            <div className="text-center py-12 text-slate-400">
-              <p className="text-4xl mb-3">📅</p>
-              <p className="font-semibold">No tenés turnos para este día.</p>
+            <div className="py-16 text-center">
+              <div className="w-12 h-12 rounded-full bg-[#f0ece4] flex items-center justify-center mx-auto mb-4 text-[#a09880]">
+                <IconCalendar />
+              </div>
+              <p className="text-sm font-semibold text-[#1e2535]">Sin turnos para este día</p>
+              <p className="text-xs text-[#8a8070] mt-1">Seleccioná otra fecha para ver tu agenda.</p>
             </div>
           )}
 
           {!loading && turnosActivos.length > 0 && (
-            <div className="space-y-3">
+            <div className="divide-y divide-[#f0ece4]">
               {turnosActivos
                 .sort((a, b) => a.hora.localeCompare(b.hora))
                 .map((t) => (
-                  <div key={t.id} className="flex items-center gap-4 px-4 py-4 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors">
-                    <div className="w-16 text-center">
-                      <p className="text-lg font-black text-slate-800">{t.hora}</p>
+                  <div key={t.id} className="flex items-center gap-5 px-6 py-4 hover:bg-[#faf8f5] transition-colors">
+                    <div className="w-14 shrink-0">
+                      <p className="text-base font-black text-[#1e2535]">{t.hora}</p>
                     </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-slate-800">
+                    <div className="w-px h-10 bg-[#e8e2d8] shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm text-[#1e2535] truncate">
                         {t.cliente.nombre} {t.cliente.apellido}
                       </p>
-                      <p className="text-sm text-slate-500">{t.servicio.tipo} · {t.servicio.duracion} min</p>
+                      <p className="text-xs text-[#8a8070] mt-0.5">{t.servicio.tipo} · {t.servicio.duracion} min</p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-slate-800">${t.servicio.precio.toLocaleString('es-AR')}</p>
-                      <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full">
+                    <div className="text-right shrink-0">
+                      <p className="font-black text-sm text-[#1e2535]">${t.servicio.precio.toLocaleString('es-AR')}</p>
+                      <span className="text-xs text-green-700 font-semibold bg-green-50 border border-green-100 px-2 py-0.5 rounded-full">
                         Confirmado
                       </span>
                     </div>

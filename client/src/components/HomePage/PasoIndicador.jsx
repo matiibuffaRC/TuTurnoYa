@@ -1,29 +1,48 @@
-const PASOS = ['Sucursal y barbero', 'Fecha y horario', 'Servicio', 'Tus datos']
+const PASOS = ['Sucursal', 'Servicio', 'Fecha y hora', 'Tus datos']
 
 export default function PasoIndicador({ pasoActual }) {
   return (
-    <div className="flex justify-center items-center gap-2 mb-10">
-      {PASOS.map((label, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
-              i <= pasoActual
-                ? 'bg-slate-800 text-white'
-                : 'bg-slate-200 text-slate-500'
-            }`}
-          >
-            {i + 1}
+    <div className="mb-12">
+      <div className="flex items-center">
+        {PASOS.map((label, i) => (
+          <div key={i} className="flex items-center flex-1 last:flex-none">
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-300 ${
+                  i < pasoActual
+                    ? 'bg-amber-600 text-white'
+                    : i === pasoActual
+                    ? 'bg-[#1e2535] text-white ring-4 ring-[#1e2535]/10'
+                    : 'bg-[#e8e2d8] text-[#a09880]'
+                }`}
+              >
+                {i < pasoActual ? (
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                ) : (
+                  i + 1
+                )}
+              </div>
+              <span className={`hidden sm:block text-xs font-medium transition-colors duration-300 whitespace-nowrap ${
+                i === pasoActual ? 'text-[#1e2535]' : 'text-[#a09880]'
+              }`}>
+                {label}
+              </span>
+            </div>
+            {i < PASOS.length - 1 && (
+              <div className="flex-1 mx-2 mb-4">
+                <div className="h-px bg-[#e8e2d8] relative">
+                  <div
+                    className="absolute top-0 left-0 h-full bg-amber-600 transition-all duration-500"
+                    style={{ width: i < pasoActual ? '100%' : '0%' }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
-
-          {i < PASOS.length - 1 && (
-            <div
-              className={`w-12 h-1 rounded ${
-                i < pasoActual ? 'bg-slate-800' : 'bg-slate-200'
-              }`}
-            />
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

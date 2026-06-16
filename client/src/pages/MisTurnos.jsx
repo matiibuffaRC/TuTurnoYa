@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { getTurnosPorEmail, cancelarTurno } from '../api'
 
+const IconCalendar = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+)
+
 export default function MisTurnos() {
   const [email, setEmail] = useState('')
   const [turnos, setTurnos] = useState([])
@@ -23,47 +30,76 @@ export default function MisTurnos() {
   }
 
   return (
-    <div className="flex flex-col justify-start min-h-[calc(100dvh-100px)] max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-slate-800 mb-2">Mis turnos</h1>
-      <p className="text-slate-500 mb-8">Ingresá tu email para ver y gestionar tus turnos.</p>
+    <div className="min-h-[calc(100dvh-80px)] bg-[#f7f4ef] montserrat-alternates">
+      <div className="max-w-2xl mx-auto px-5 py-14">
 
-      <form onSubmit={buscar} className="flex gap-3 mb-8">
-        <input type="email" required placeholder="tu@email.com" value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-400" />
-        <button type="submit"
-          className="cursor-pointer bg-slate-800 text-white px-6 py-2 rounded-lg font-medium hover:bg-slate-700 transition-colors">
-          {loading ? 'Buscando...' : 'Buscar'}
-        </button>
-      </form>
-
-      {buscado && turnos.length === 0 && (
-        <div className="text-center py-12 text-slate-400">
-          <p className="text-5xl mb-3">📭</p>
-          <p className="text-lg">No tenés turnos activos.</p>
+        <div className="mb-10">
+          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700 mb-2">Gestión</p>
+          <h1 className="text-3xl font-black text-[#1e2535] leading-tight">Mis turnos</h1>
+          <p className="text-[#8a8070] mt-1.5 text-sm">Ingresá tu email para ver y gestionar tus reservas.</p>
         </div>
-      )}
 
-      <div className="grid gap-4">
-        {turnos.map((t) => (
-          <div key={t.id} className="bg-white rounded-xl shadow-sm border border-slate-100 px-6 py-5">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <p className="text-lg font-bold text-slate-800">{t.fecha} — {t.hora}</p>
-                <p className="text-slate-600"><span className="font-medium">Barbero:</span> {t.barbero.nombre} {t.barbero.apellido}</p>
-                <p className="text-slate-600"><span className="font-medium">Sucursal:</span> {t.barbero.sucursal.nombre}</p>
-                <p className="text-slate-600"><span className="font-medium">Dirección:</span> {t.barbero.sucursal.direccion}</p>
-                <p className="text-slate-600">
-                  <span className="font-medium">Servicio:</span> {t.servicio.tipo} — ${t.servicio.precio.toLocaleString('es-AR')} ({t.servicio.duracion} min)
-                </p>
-              </div>
-              <button onClick={() => cancelar(t.id)}
-                className="cursor-pointer text-sm text-white font-bold bg-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-4 py-1 rounded-full transition-colors">
-                Cancelar
-              </button>
+        <form onSubmit={buscar} className="bg-white rounded-2xl border border-[#e8e2d8] p-5 flex gap-3 mb-8">
+          <input
+            type="email"
+            required
+            placeholder="tu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="flex-1 border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-4 py-3 text-sm text-[#1e2535] font-medium placeholder:text-[#c0b8a8] focus:outline-none focus:border-[#1e2535] focus:bg-white transition-all"
+          />
+          <button
+            type="submit"
+            className="cursor-pointer bg-[#1e2535] text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-[#2d3748] transition-colors whitespace-nowrap disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? 'Buscando...' : 'Buscar'}
+          </button>
+        </form>
+
+        {buscado && turnos.length === 0 && (
+          <div className="bg-white rounded-2xl border border-[#e8e2d8] py-16 text-center">
+            <div className="w-12 h-12 rounded-full bg-[#f0ece4] flex items-center justify-center mx-auto mb-4 text-[#a09880]">
+              <IconCalendar />
             </div>
+            <p className="text-sm font-semibold text-[#1e2535]">Sin turnos activos</p>
+            <p className="text-xs text-[#8a8070] mt-1">No encontramos reservas para este email.</p>
           </div>
-        ))}
+        )}
+
+        <div className="space-y-3">
+          {turnos.map((t) => (
+            <div key={t.id} className="bg-white rounded-2xl border border-[#e8e2d8] px-6 py-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-2 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-black text-[#1e2535]">{t.hora}</span>
+                    <span className="text-[#c0b8a8]">·</span>
+                    <span className="text-sm text-[#8a8070] font-medium">{t.fecha}</span>
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-sm text-[#1e2535]">
+                      <span className="font-semibold">{t.barbero.nombre} {t.barbero.apellido}</span>
+                      <span className="text-[#8a8070]"> — {t.barbero.sucursal.nombre}</span>
+                    </p>
+                    <p className="text-xs text-[#8a8070]">{t.barbero.sucursal.direccion}</p>
+                    <p className="text-xs text-[#8a8070]">
+                      {t.servicio.tipo} · {t.servicio.duracion} min ·{' '}
+                      <span className="font-bold text-[#1e2535]">${t.servicio.precio.toLocaleString('es-AR')}</span>
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => cancelar(t.id)}
+                  className="cursor-pointer text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   )
