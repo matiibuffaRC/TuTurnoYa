@@ -9,6 +9,7 @@ import ReservarTurno from './pages/ReservarTurno'
 import Servicios from './pages/Servicios'
 import MisTurnos from './pages/MisTurnos'
 import AdminsPanel from './pages/AdminsPanel'
+import Dashboard from './pages/Dashboard'
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                     <Route path="/servicios" element={<Servicios />} />
                     <Route path="/mis-turnos" element={<MisTurnos />} />
                     <Route path="/admins-panel" element={<AdminsPanel />}/>
+                    <Route path="/dashboard" element={<Dashboard />}/>
                 </Routes>
                 <Footer></Footer>
             </div>
