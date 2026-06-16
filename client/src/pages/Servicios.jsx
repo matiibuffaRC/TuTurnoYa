@@ -9,7 +9,7 @@ export default function Servicios() {
   }, [])
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="flex flex-col justify-start min-h-[calc(100dvh-100px)] max-w-3xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold text-slate-800 mb-2">Nuestros servicios</h1>
       <p className="text-slate-500 mb-8">Todos los precios incluyen el trabajo del barbero.</p>
 
