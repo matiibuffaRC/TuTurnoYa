@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { InputField } from '../components/AdminsPanel/InputField';
+import { useNavigate } from 'react-router-dom';
 
 const AdminsPanel = () => {
+    const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         email: '',
         password: ''
     });
-    
+
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -24,13 +26,22 @@ const AdminsPanel = () => {
         setIsLoading(true);
 
         try {
-            setTimeout(() => {
-                console.log('Datos enviados:', credentials);
+            const res = await fetch('http://localhost:3001/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(credentials),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.error || 'Credenciales inválidas');
                 setIsLoading(false);
-                alert('¡Simulación de Login exitosa! Conectando agenda...');
-            }, 2000);
+                return;
+            }
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('barbero', JSON.stringify(data.barbero));
+            navigate('/dashboard');
         } catch (err) {
-            setError(err.message || 'Ocurrió un error inesperado');
+            setError('No se pudo conectar con el servidor');
             setIsLoading(false);
         }
     };
