@@ -1,129 +1,74 @@
 import { Link } from 'react-router-dom'
 
 export default function Footer() {
-    return (
-        <footer className="relative overflow-hidden bg-[#262E41] text-white">
-            {/* Efectos de fondo */}
-            <div className="absolute -top-20 left-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute -bottom-20 right-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+  return (
+    <footer className="relative overflow-hidden bg-[#1e2535] text-white montserrat-alternates">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(180,130,50,0.08)_0%,_transparent_60%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(180,130,50,0.05)_0%,_transparent_60%)] pointer-events-none" />
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 py-14">
-                <div className="grid md:grid-cols-3 gap-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-14">
+        <div className="grid md:grid-cols-3 gap-12">
 
-                    {/* Marca */}
-                    <div>
-                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold tracking-wider text-amber-300 uppercase mb-4">
-                            ✂ TuTurnoYa
-                        </div>
+          <div>
+            <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-500 mb-4">TuTurnoYa</p>
+            <h3 className="text-2xl font-black tracking-tight leading-tight">
+              Gestioná tu salón
+              <span className="block text-amber-400">sin complicaciones</span>
+            </h3>
+            <p className="text-white/50 text-sm mt-4 leading-relaxed">
+              Plataforma diseñada para peluquerías y barberías que quieren optimizar reservas, clientes y horarios.
+            </p>
+          </div>
 
-                        <h3 className="text-3xl font-black tracking-tight">
-                            Gestioná tu salón
-                            <span className="block text-amber-400">
-                                sin complicaciones
-                            </span>
-                        </h3>
+          <div>
+            <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-500 mb-5">Navegación</p>
+            <ul className="space-y-3">
+              {[
+                { to: '/', label: 'Reservar turno' },
+                { to: '/servicios', label: 'Servicios' },
+                { to: '/mis-turnos', label: 'Mis turnos' },
+              ].map(({ to, label }) => (
+                <li key={to}>
+                  <Link to={to} className="text-sm text-white/60 hover:text-white transition-colors font-medium">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-                        <p className="text-slate-300 text-sm mt-4 max-w-sm">
-                            Plataforma diseñada para peluquerías y barberías que
-                            quieren optimizar reservas, clientes y horarios.
-                        </p>
-                    </div>
-
-                    {/* Navegación */}
-                    <div>
-                        <h4 className="font-bold uppercase tracking-wider text-sm mb-4 text-amber-300">
-                            Navegación
-                        </h4>
-
-                        <ul className="space-y-3">
-                            <li>
-                                <Link
-                                    to="/"
-                                    className="text-slate-300 hover:text-white transition-colors"
-                                >
-                                    Reservar turno
-                                </Link>
-                            </li>
-
-                            <li>
-                                <Link
-                                    to="/servicios"
-                                    className="text-slate-300 hover:text-white transition-colors"
-                                >
-                                    Servicios
-                                </Link>
-                            </li>
-
-                            <li>
-                                <Link
-                                    to="/mis-turnos"
-                                    className="text-slate-300 hover:text-white transition-colors"
-                                >
-                                    Mis turnos
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Estadísticas */}
-                    <div className="space-y-3">
-                        <h4 className="font-bold uppercase tracking-wider text-sm text-amber-300">
-                            TuTurnoYa
-                        </h4>
-
-                        <div className="p-3 hover:translate-x-1 transition-transform border border-white/10 rounded-2xl">
-                            <p className="text-xs text-slate-400">
-                                Peluquerías trabajando con nosotros
-                            </p>
-                            <p className="text-xl font-black">
-                                +14
-                            </p>
-                        </div>
-
-                        <div className="p-3 hover:translate-x-1 transition-transform border border-white/10 rounded-2xl">
-                            <p className="text-xs text-slate-400">
-                                Años acompañando negocios
-                            </p>
-                            <p className="text-xl font-black">
-                                +3
-                            </p>
-                        </div>
-                    </div>
+          <div>
+            <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-500 mb-5">En números</p>
+            <div className="space-y-3">
+              {[
+                { value: '+14', label: 'Peluquerías activas' },
+                { value: '+3', label: 'Años en el mercado' },
+              ].map(({ value, label }) => (
+                <div key={label} className="border border-white/10 rounded-xl px-4 py-3 hover:border-white/20 transition-colors">
+                  <p className="text-xl font-black text-white">{value}</p>
+                  <p className="text-xs text-white/50 mt-0.5">{label}</p>
                 </div>
-
-                {/* Separador */}
-                <div className="h-px bg-white/10 my-8"></div>
-
-                {/* Footer inferior */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-                    <p className="text-slate-400">
-                        © {new Date().getFullYear()} TuTurnoYa. Todos los derechos reservados.
-                    </p>
-
-                    <div className="flex items-center gap-6">
-                        <a
-                            href="#"
-                            className="text-slate-400 hover:text-white transition-colors"
-                        >
-                            Términos
-                        </a>
-
-                        <a
-                            href="#"
-                            className="text-slate-400 hover:text-white transition-colors"
-                        >
-                            Privacidad
-                        </a>
-
-                        <a
-                            href="#"
-                            className="text-slate-400 hover:text-white transition-colors"
-                        >
-                            Contacto
-                        </a>
-                    </div>
-                </div>
+              ))}
             </div>
-        </footer>
-    )
+          </div>
+
+        </div>
+
+        <div className="h-px bg-white/10 my-10" />
+
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+          <p className="text-white/40">
+            © {new Date().getFullYear()} TuTurnoYa. Todos los derechos reservados.
+          </p>
+          <div className="flex items-center gap-6">
+            {['Términos', 'Privacidad', 'Contacto'].map((label) => (
+              <a key={label} href="#" className="text-white/40 hover:text-white/80 transition-colors font-medium">
+                {label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
 }

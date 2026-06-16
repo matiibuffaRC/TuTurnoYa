@@ -2,17 +2,23 @@ const prisma = require('../config/database')
 
 const HORARIOS = [
   '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '12:00', '16:00', '16:30', '17:00', '17:30', '18:00', 
+  '12:00', '16:00', '16:30', '17:00', '17:30', '18:00',
   '18:30', '19:00', '19:30', '20:00', '20:30'
 ]
+
+const toMinutes = (hhmm) => {
+  const [h, m] = hhmm.split(':').map(Number)
+  return h * 60 + m
+}
+
+const overlaps = (startA, durA, startB, durB) =>
+  startA < startB + durB && startA + durA > startB
 
 // Listar turnos por email del cliente
 const listarTurnos = async (req, res) => {
   try {
     const { email } = req.query
-    if (!email) {
-      return res.status(400).json({ error: 'Falta el parámetro email' })
-    }
+    if (!email) return res.status(400).json({ error: 'Falta el parámetro email' })
 
     const turnos = await prisma.turno.findMany({
       where: { cliente: { email }, estado: 'activo' },
@@ -24,7 +30,7 @@ const listarTurnos = async (req, res) => {
       orderBy: [{ fecha: 'asc' }, { hora: 'asc' }],
     })
     res.json(turnos)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al listar turnos' })
   }
 }
@@ -41,35 +47,43 @@ const obtenerTurno = async (req, res) => {
         servicio: true,
       },
     })
-    if (!turno) {
-      return res.status(404).json({ error: 'Turno no encontrado' })
-    }
+    if (!turno) return res.status(404).json({ error: 'Turno no encontrado' })
     res.json(turno)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al obtener turno' })
   }
 }
 
-// Listar turnos disponibles para un barbero en una fecha
+// Listar turnos disponibles para un barbero en una fecha, considerando duración del servicio
 const listarTurnosDisponibles = async (req, res) => {
   try {
-    const { barberoId, fecha } = req.query
+    const { barberoId, fecha, servicioId } = req.query
     if (!barberoId || !fecha) {
       return res.status(400).json({ error: 'Faltan parámetros barberoId y fecha' })
     }
 
-    const ocupados = await prisma.turno.findMany({
-      where: {
-        barberoId: Number(barberoId),
-        fecha,
-        estado: 'activo',
-      },
-      select: { hora: true },
+    // Duración del servicio que el cliente quiere reservar
+    let duracionNueva = 30
+    if (servicioId) {
+      const servicio = await prisma.servicio.findUnique({ where: { id: Number(servicioId) } })
+      if (servicio) duracionNueva = servicio.duracion
+    }
+
+    // Obtener turnos activos del barbero ese día con la duración de cada servicio
+    const turnosOcupados = await prisma.turno.findMany({
+      where: { barberoId: Number(barberoId), fecha, estado: 'activo' },
+      include: { servicio: true },
     })
-    const horasOcupadas = ocupados.map((t) => t.hora)
-    const disponibles = HORARIOS.filter((h) => !horasOcupadas.includes(h))
+
+    const disponibles = HORARIOS.filter((slot) => {
+      const slotMin = toMinutes(slot)
+      return !turnosOcupados.some((t) =>
+        overlaps(slotMin, duracionNueva, toMinutes(t.hora), t.servicio.duracion)
+      )
+    })
+
     res.json(disponibles)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al listar turnos disponibles' })
   }
 }
@@ -83,59 +97,39 @@ const crearTurno = async (req, res) => {
       return res.status(400).json({ error: 'Faltan datos obligatorios' })
     }
 
-    // Verificar que la hora es válida
     if (!HORARIOS.includes(hora)) {
       return res.status(400).json({ error: 'Hora no válida' })
     }
 
-    // Verificar que el barbero existe
-    const barbero = await prisma.barbero.findUnique({
-      where: { id: Number(barberoId) },
-    })
-    if (!barbero) {
-      return res.status(404).json({ error: 'Barbero no encontrado' })
+    const barbero = await prisma.barbero.findUnique({ where: { id: Number(barberoId) } })
+    if (!barbero) return res.status(404).json({ error: 'Barbero no encontrado' })
+    if (!barbero.agendaAbierta) {
+      return res.status(409).json({ error: 'Este peluquero tiene la agenda cerrada y no acepta nuevas reservas por el momento.' })
     }
 
-    // Verificar que el servicio existe
-    const servicio = await prisma.servicio.findUnique({
-      where: { id: Number(servicioId) },
-    })
-    if (!servicio) {
-      return res.status(404).json({ error: 'Servicio no encontrado' })
-    }
+    const servicio = await prisma.servicio.findUnique({ where: { id: Number(servicioId) } })
+    if (!servicio) return res.status(404).json({ error: 'Servicio no encontrado' })
 
-    // Verificar que el horario no está ocupado
-    const conflicto = await prisma.turno.findFirst({
-      where: {
-        barberoId: Number(barberoId),
-        fecha,
-        hora,
-        estado: 'activo',
-      },
+    // Verificar solapamiento considerando duraciones
+    const turnosExistentes = await prisma.turno.findMany({
+      where: { barberoId: Number(barberoId), fecha, estado: 'activo' },
+      include: { servicio: true },
     })
-    if (conflicto) {
-      return res.status(409).json({ error: 'Ese horario ya está reservado' })
-    }
 
-    // Buscar o crear cliente
-    let cliente = await prisma.cliente.findUnique({
-      where: { email },
-    })
+    const nuevoStart = toMinutes(hora)
+    const conflicto = turnosExistentes.some((t) =>
+      overlaps(nuevoStart, servicio.duracion, toMinutes(t.hora), t.servicio.duracion)
+    )
+    if (conflicto) return res.status(409).json({ error: 'Ese horario se superpone con un turno existente' })
+
+    let cliente = await prisma.cliente.findUnique({ where: { email } })
     if (!cliente) {
-      cliente = await prisma.cliente.create({
-        data: {
-          nombre,
-          apellido,
-          email,
-        },
-      })
+      cliente = await prisma.cliente.create({ data: { nombre, apellido, email } })
     }
 
-    // Crear turno
     const turno = await prisma.turno.create({
       data: {
-        fecha,
-        hora,
+        fecha, hora,
         clienteId: cliente.id,
         barberoId: Number(barberoId),
         servicioId: Number(servicioId),
@@ -147,7 +141,7 @@ const crearTurno = async (req, res) => {
       },
     })
     res.status(201).json(turno)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al crear turno' })
   }
 }
@@ -158,56 +152,41 @@ const actualizarTurno = async (req, res) => {
     const { id } = req.params
     const { fecha, hora, barberoId, servicioId, estado } = req.body
 
-    const turno = await prisma.turno.findUnique({
-      where: { id: Number(id) },
-    })
-    if (!turno) {
-      return res.status(404).json({ error: 'Turno no encontrado' })
-    }
+    const turno = await prisma.turno.findUnique({ where: { id: Number(id) } })
+    if (!turno) return res.status(404).json({ error: 'Turno no encontrado' })
 
-    // Si se cambia hora, fecha o barbero, verificar disponibilidad
     if (fecha || hora || barberoId) {
       const newFecha = fecha || turno.fecha
       const newHora = hora || turno.hora
       const newBarberoId = barberoId ? Number(barberoId) : turno.barberoId
 
-      // Verificar que la hora es válida
       if (hora && !HORARIOS.includes(hora)) {
         return res.status(400).json({ error: 'Hora no válida' })
       }
 
-      const conflicto = await prisma.turno.findFirst({
-        where: {
-          id: { not: Number(id) },
-          barberoId: newBarberoId,
-          fecha: newFecha,
-          hora: newHora,
-          estado: 'activo',
-        },
+      const newServicioId = servicioId ? Number(servicioId) : turno.servicioId
+      const newServicio = await prisma.servicio.findUnique({ where: { id: newServicioId } })
+
+      const turnosExistentes = await prisma.turno.findMany({
+        where: { barberoId: newBarberoId, fecha: newFecha, estado: 'activo', id: { not: Number(id) } },
+        include: { servicio: true },
       })
-      if (conflicto) {
-        return res.status(409).json({ error: 'Ese horario ya está reservado' })
-      }
+
+      const nuevoStart = toMinutes(newHora)
+      const conflicto = turnosExistentes.some((t) =>
+        overlaps(nuevoStart, newServicio.duracion, toMinutes(t.hora), t.servicio.duracion)
+      )
+      if (conflicto) return res.status(409).json({ error: 'Ese horario se superpone con un turno existente' })
     }
 
-    // Si cambia servicioId, verificar que existe
     if (servicioId) {
-      const servicio = await prisma.servicio.findUnique({
-        where: { id: Number(servicioId) },
-      })
-      if (!servicio) {
-        return res.status(404).json({ error: 'Servicio no encontrado' })
-      }
+      const servicio = await prisma.servicio.findUnique({ where: { id: Number(servicioId) } })
+      if (!servicio) return res.status(404).json({ error: 'Servicio no encontrado' })
     }
 
-    // Si cambia barberoId, verificar que existe
     if (barberoId) {
-      const barbero = await prisma.barbero.findUnique({
-        where: { id: Number(barberoId) },
-      })
-      if (!barbero) {
-        return res.status(404).json({ error: 'Barbero no encontrado' })
-      }
+      const barbero = await prisma.barbero.findUnique({ where: { id: Number(barberoId) } })
+      if (!barbero) return res.status(404).json({ error: 'Barbero no encontrado' })
     }
 
     const turnoActualizado = await prisma.turno.update({
@@ -226,28 +205,24 @@ const actualizarTurno = async (req, res) => {
       },
     })
     res.json(turnoActualizado)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al actualizar turno' })
   }
 }
 
-// Eliminar/cancelar turno
+// Eliminar/cancelar turno (soft delete)
 const eliminarTurno = async (req, res) => {
   try {
     const { id } = req.params
-    const turno = await prisma.turno.findUnique({
-      where: { id: Number(id) },
-    })
-    if (!turno) {
-      return res.status(404).json({ error: 'Turno no encontrado' })
-    }
+    const turno = await prisma.turno.findUnique({ where: { id: Number(id) } })
+    if (!turno) return res.status(404).json({ error: 'Turno no encontrado' })
 
     const turnoActualizado = await prisma.turno.update({
       where: { id: Number(id) },
       data: { estado: 'cancelado' },
     })
     res.json({ mensaje: 'Turno cancelado correctamente', turno: turnoActualizado })
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al cancelar turno' })
   }
 }
@@ -266,7 +241,7 @@ const listarTurnosBarbero = async (req, res) => {
       orderBy: { hora: 'asc' },
     })
     res.json(turnos)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al listar turnos del barbero' })
   }
 }

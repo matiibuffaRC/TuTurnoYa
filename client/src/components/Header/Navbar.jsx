@@ -52,7 +52,7 @@ export default function Navbar() {
 
                         {barbero ? (
                             <div className="flex items-center gap-3">
-                                <span className="text-sm text-amber-400 font-semibold">✂ {barbero.nombre}</span>
+                                <span className="text-sm text-amber-400 font-semibold">{barbero.nombre}</span>
                                 <button onClick={cerrarSesion} className="text-xs text-white/50 hover:text-white/90 transition-colors cursor-pointer">
                                     Salir
                                 </button>
@@ -97,14 +97,14 @@ export default function Navbar() {
                     <div className="border-t border-white/10 mt-2 pt-2">
                         {barbero ? (
                             <>
-                                <p className="px-4 py-2 text-xs text-amber-400 font-semibold">✂ {barbero.nombre} {barbero.apellido}</p>
+                                <p className="px-4 py-2 text-xs text-amber-400 font-semibold">{barbero.nombre} {barbero.apellido}</p>
                                 <button onClick={() => { cerrarSesion(); cerrarMenu() }} className="w-full text-left px-4 py-3 rounded-xl text-sm text-white/50 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
                                     Cerrar sesión
                                 </button>
                             </>
                         ) : (
                             <Link to="/admins-panel" onClick={cerrarMenu} className="block px-4 py-3 rounded-xl text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-all">
-                                ✂ Soy peluquero
+                                Soy peluquero
                             </Link>
                         )}
                     </div>

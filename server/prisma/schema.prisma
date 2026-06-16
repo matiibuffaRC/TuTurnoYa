@@ -32,7 +32,8 @@ model Barbero {
   telefono   String
   email      String   @unique
   password   String
-  activo     Boolean  @default(true)
+  activo        Boolean  @default(true)
+  agendaAbierta Boolean  @default(true)
   sucursalId Int
   sucursal   Sucursal @relation(fields: [sucursalId], references: [id])
   turnos     Turno[]
