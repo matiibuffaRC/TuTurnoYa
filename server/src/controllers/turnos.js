@@ -252,6 +252,25 @@ const eliminarTurno = async (req, res) => {
   }
 }
 
+// Listar turnos de un barbero por fecha
+const listarTurnosBarbero = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { fecha } = req.query
+    const where = { barberoId: Number(id) }
+    if (fecha) where.fecha = fecha
+
+    const turnos = await prisma.turno.findMany({
+      where,
+      include: { cliente: true, servicio: true },
+      orderBy: { hora: 'asc' },
+    })
+    res.json(turnos)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al listar turnos del barbero' })
+  }
+}
+
 module.exports = {
   listarTurnos,
   obtenerTurno,
@@ -259,4 +278,5 @@ module.exports = {
   crearTurno,
   actualizarTurno,
   eliminarTurno,
+  listarTurnosBarbero,
 }

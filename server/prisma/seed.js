@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client')
+const bcrypt = require('bcryptjs')
 const prisma = new PrismaClient()
 
 async function main() {
@@ -21,12 +22,14 @@ async function main() {
     },
   })
 
+  const hash = (pw) => bcrypt.hashSync(pw, 10)
+
   await prisma.barbero.createMany({
     data: [
-      { nombre: 'Carlos', apellido: 'López', telefono: '11-1111-1111', sucursalId: suc1.id },
-      { nombre: 'Martín', apellido: 'García', telefono: '11-2222-2222', sucursalId: suc1.id },
-      { nombre: 'Diego', apellido: 'Fernández', telefono: '11-3333-3333', sucursalId: suc2.id },
-      { nombre: 'Pablo', apellido: 'Rodríguez', telefono: '11-4444-4444', sucursalId: suc2.id },
+      { nombre: 'Carlos', apellido: 'López', telefono: '11-1111-1111', email: 'carlos@tuturnoya.com', password: hash('carlos123'), sucursalId: suc1.id },
+      { nombre: 'Martín', apellido: 'García', telefono: '11-2222-2222', email: 'martin@tuturnoya.com', password: hash('martin123'), sucursalId: suc1.id },
+      { nombre: 'Diego', apellido: 'Fernández', telefono: '11-3333-3333', email: 'diego@tuturnoya.com', password: hash('diego123'), sucursalId: suc2.id },
+      { nombre: 'Pablo', apellido: 'Rodríguez', telefono: '11-4444-4444', email: 'pablo@tuturnoya.com', password: hash('pablo123'), sucursalId: suc2.id },
     ],
   })
 
