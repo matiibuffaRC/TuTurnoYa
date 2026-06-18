@@ -14,6 +14,13 @@ const toMinutes = (hhmm) => {
 const overlaps = (startA, durA, startB, durB) =>
   startA < startB + durB && startA + durA > startB
 
+const hoyArgentina = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' })
+const horaActualMinutos = () => {
+  const now = new Date()
+  const partes = now.toLocaleTimeString('en-GB', { timeZone: 'America/Argentina/Buenos_Aires', hour: '2-digit', minute: '2-digit' })
+  return toMinutes(partes)
+}
+
 // Listar turnos por email del cliente
 const listarTurnos = async (req, res) => {
   try {
@@ -75,8 +82,12 @@ const listarTurnosDisponibles = async (req, res) => {
       include: { servicio: true },
     })
 
+    const esHoy = fecha === hoyArgentina()
+    const ahoraMin = esHoy ? horaActualMinutos() : -1
+
     const disponibles = HORARIOS.filter((slot) => {
       const slotMin = toMinutes(slot)
+      if (esHoy && slotMin <= ahoraMin) return false
       return !turnosOcupados.some((t) =>
         overlaps(slotMin, duracionNueva, toMinutes(t.hora), t.servicio.duracion)
       )
@@ -99,6 +110,14 @@ const crearTurno = async (req, res) => {
 
     if (!HORARIOS.includes(hora)) {
       return res.status(400).json({ error: 'Hora no válida' })
+    }
+
+    const hoy = hoyArgentina()
+    if (fecha < hoy) {
+      return res.status(400).json({ error: 'No se pueden reservar turnos en fechas pasadas' })
+    }
+    if (fecha === hoy && toMinutes(hora) <= horaActualMinutos()) {
+      return res.status(400).json({ error: 'No se pueden reservar turnos en horarios ya transcurridos' })
     }
 
     const barbero = await prisma.barbero.findUnique({ where: { id: Number(barberoId) } })
