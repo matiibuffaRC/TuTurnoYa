@@ -47,4 +47,20 @@ router.delete('/:id', barberosController.eliminarBarbero)
 const { verificarToken } = require('../middlewares/authMiddleware')
 router.patch('/:id/agenda', verificarToken, barberosController.toggleAgenda)
 
+// PATCH /barberos/:id/horarios - Actualizar horarios de trabajo (requiere token)
+router.patch(
+  '/:id/horarios',
+  verificarToken,
+  [
+    body('horaInicio')
+      .matches(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
+      .withMessage('horaInicio debe estar en formato HH:mm'),
+    body('horaFin')
+      .matches(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
+      .withMessage('horaFin debe estar en formato HH:mm'),
+  ],
+  handleValidationErrors,
+  barberosController.actualizarHorarios
+)
+
 module.exports = router

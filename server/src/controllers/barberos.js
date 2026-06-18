@@ -50,7 +50,7 @@ const obtenerBarbero = async (req, res) => {
 // Crear barbero
 const crearBarbero = async (req, res) => {
   try {
-    const { nombre, apellido, telefono, sucursalId } = req.body
+    const { nombre, apellido, telefono, sucursalId, horaInicio, horaFin } = req.body
 
     // Verificar que la sucursal existe
     const sucursal = await prisma.sucursal.findUnique({
@@ -60,6 +60,21 @@ const crearBarbero = async (req, res) => {
       return res.status(404).json({ error: 'Sucursal no encontrada' })
     }
 
+    const hInicio = horaInicio || '09:00'
+    const hFin = horaFin || '18:00'
+
+    // Validar que horaInicio < horaFin
+    if (hInicio >= hFin) {
+      return res.status(400).json({ error: 'La hora de inicio debe ser anterior a la hora de fin' })
+    }
+
+    // Validar que horaFin no sea posterior al cierre de la peluquería
+    if (hFin > sucursal.horarioCierre) {
+      return res.status(400).json({ 
+        error: `El horario de fin no puede ser posterior al cierre de la peluquería (${sucursal.horarioCierre})` 
+      })
+    }
+
     const barbero = await prisma.barbero.create({
       data: {
         nombre,
@@ -67,6 +82,8 @@ const crearBarbero = async (req, res) => {
         telefono,
         sucursalId: Number(sucursalId),
         activo: true,
+        horaInicio: hInicio,
+        horaFin: hFin,
       },
       include: {
         sucursal: true,
@@ -82,23 +99,41 @@ const crearBarbero = async (req, res) => {
 const actualizarBarbero = async (req, res) => {
   try {
     const { id } = req.params
-    const { nombre, apellido, telefono, sucursalId, activo } = req.body
+    const { nombre, apellido, telefono, sucursalId, activo, horaInicio, horaFin } = req.body
 
     const barbero = await prisma.barbero.findUnique({
       where: { id: Number(id) },
+      include: { sucursal: true }
     })
     if (!barbero) {
       return res.status(404).json({ error: 'Barbero no encontrado' })
     }
 
+    let sucursal = barbero.sucursal
+
     // Si cambia sucursalId, verificar que existe
     if (sucursalId) {
-      const sucursal = await prisma.sucursal.findUnique({
+      sucursal = await prisma.sucursal.findUnique({
         where: { id: Number(sucursalId) },
       })
       if (!sucursal) {
         return res.status(404).json({ error: 'Sucursal no encontrada' })
       }
+    }
+
+    const newHoraInicio = horaInicio || barbero.horaInicio
+    const newHoraFin = horaFin || barbero.horaFin
+
+    // Validar que horaInicio < horaFin
+    if (newHoraInicio >= newHoraFin) {
+      return res.status(400).json({ error: 'La hora de inicio debe ser anterior a la hora de fin' })
+    }
+
+    // Validar que horaFin no sea posterior al cierre de la peluquería
+    if (newHoraFin > sucursal.horarioCierre) {
+      return res.status(400).json({ 
+        error: `El horario de fin no puede ser posterior al cierre de la peluquería (${sucursal.horarioCierre})` 
+      })
     }
 
     const barberoActualizado = await prisma.barbero.update({
@@ -109,6 +144,8 @@ const actualizarBarbero = async (req, res) => {
         telefono: telefono || barbero.telefono,
         sucursalId: sucursalId ? Number(sucursalId) : barbero.sucursalId,
         activo: activo !== undefined ? activo : barbero.activo,
+        horaInicio: newHoraInicio,
+        horaFin: newHoraFin,
       },
       include: {
         sucursal: true,
@@ -160,6 +197,51 @@ const toggleAgenda = async (req, res) => {
   }
 }
 
+// Actualizar solo los horarios del barbero
+const actualizarHorarios = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { horaInicio, horaFin } = req.body
+
+    if (!horaInicio || !horaFin) {
+      return res.status(400).json({ error: 'horaInicio y horaFin son obligatorios' })
+    }
+
+    // Validar que horaInicio < horaFin
+    if (horaInicio >= horaFin) {
+      return res.status(400).json({ error: 'La hora de inicio debe ser anterior a la hora de fin' })
+    }
+
+    const barbero = await prisma.barbero.findUnique({ 
+      where: { id: Number(id) },
+      include: { sucursal: true }
+    })
+    if (!barbero) {
+      return res.status(404).json({ error: 'Barbero no encontrado' })
+    }
+
+    // Validar que horaFin no sea posterior al cierre de la peluquería
+    if (horaFin > barbero.sucursal.horarioCierre) {
+      return res.status(400).json({ 
+        error: `El horario de fin no puede ser posterior al cierre de la peluquería (${barbero.sucursal.horarioCierre})` 
+      })
+    }
+
+    const barberoActualizado = await prisma.barbero.update({
+      where: { id: Number(id) },
+      data: {
+        horaInicio,
+        horaFin,
+      },
+      include: { sucursal: true },
+    })
+    const { password: _, ...sinPassword } = barberoActualizado
+    res.json(sinPassword)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar horarios' })
+  }
+}
+
 module.exports = {
   listarBarberos,
   obtenerBarbero,
@@ -167,4 +249,5 @@ module.exports = {
   actualizarBarbero,
   eliminarBarbero,
   toggleAgenda,
+  actualizarHorarios,
 }
