@@ -141,6 +141,25 @@ const eliminarBarbero = async (req, res) => {
   }
 }
 
+// Actualizar horarios habilitados del barbero
+const actualizarHorarios = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { horarios } = req.body
+    if (!Array.isArray(horarios)) return res.status(400).json({ error: 'horarios debe ser un array' })
+
+    const barberoActualizado = await prisma.barbero.update({
+      where: { id: Number(id) },
+      data: { horariosHabilitados: JSON.stringify(horarios) },
+      include: { sucursal: true },
+    })
+    const { password: _, ...sinPassword } = barberoActualizado
+    res.json(sinPassword)
+  } catch {
+    res.status(500).json({ error: 'Error al actualizar horarios' })
+  }
+}
+
 // Toggle agenda abierta/cerrada
 const toggleAgenda = async (req, res) => {
   try {
@@ -167,4 +186,5 @@ module.exports = {
   actualizarBarbero,
   eliminarBarbero,
   toggleAgenda,
+  actualizarHorarios,
 }
