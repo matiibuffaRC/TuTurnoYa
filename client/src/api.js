@@ -16,3 +16,12 @@ export const toggleAgenda = (barberoId, token) =>
     method: 'PATCH',
     headers: { Authorization: `Bearer ${token}` },
   }).then(r => r.json())
+
+export const updateHorarios = (barberoId, horarios, token) =>
+  fetch(`${BASE}/barberos/${barberoId}/horarios`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ horarios }),
+  }).then(r => r.json())
+
+export const getBarbero = (id) => fetch(`${BASE}/barberos/${id}`).then(r => r.json())

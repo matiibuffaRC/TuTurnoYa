@@ -43,8 +43,12 @@ router.put(
 // DELETE /barberos/:id - Eliminar (soft delete)
 router.delete('/:id', barberosController.eliminarBarbero)
 
-// PATCH /barberos/:id/agenda - Abrir/cerrar agenda (requiere token)
 const { verificarToken } = require('../middlewares/authMiddleware')
+
+// PATCH /barberos/:id/agenda - Abrir/cerrar agenda (requiere token)
 router.patch('/:id/agenda', verificarToken, barberosController.toggleAgenda)
+
+// PATCH /barberos/:id/horarios - Actualizar horarios habilitados (requiere token)
+router.patch('/:id/horarios', verificarToken, barberosController.actualizarHorarios)
 
 module.exports = router

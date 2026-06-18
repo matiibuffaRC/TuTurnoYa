@@ -1,11 +1,5 @@
 const prisma = require('../config/database')
 
-const HORARIOS = [
-  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '12:00', '16:00', '16:30', '17:00', '17:30', '18:00',
-  '18:30', '19:00', '19:30', '20:00', '20:30'
-]
-
 const toMinutes = (hhmm) => {
   const [h, m] = hhmm.split(':').map(Number)
   return h * 60 + m
@@ -13,6 +7,29 @@ const toMinutes = (hhmm) => {
 
 const overlaps = (startA, durA, startB, durB) =>
   startA < startB + durB && startA + durA > startB
+
+// Genera slots cada 30 min entre apertura y cierre
+const generarSlots = (apertura, cierre) => {
+  const slots = []
+  let cur = toMinutes(apertura)
+  const end = toMinutes(cierre)
+  while (cur < end) {
+    const h = String(Math.floor(cur / 60)).padStart(2, '0')
+    const m = String(cur % 60).padStart(2, '0')
+    slots.push(`${h}:${m}`)
+    cur += 30
+  }
+  return slots
+}
+
+// Devuelve los slots válidos para un barbero respetando el horario de la sucursal
+const getSlotsValidos = (barbero) => {
+  const { sucursal, horariosHabilitados } = barbero
+  const todosSucursal = generarSlots(sucursal.horarioApertura, sucursal.horarioCierre)
+  if (!horariosHabilitados) return todosSucursal
+  const habilitados = JSON.parse(horariosHabilitados)
+  return todosSucursal.filter(s => habilitados.includes(s))
+}
 
 const hoyArgentina = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' })
 const horaActualMinutos = () => {
@@ -69,14 +86,20 @@ const listarTurnosDisponibles = async (req, res) => {
       return res.status(400).json({ error: 'Faltan parámetros barberoId y fecha' })
     }
 
-    // Duración del servicio que el cliente quiere reservar
+    const barbero = await prisma.barbero.findUnique({
+      where: { id: Number(barberoId) },
+      include: { sucursal: true },
+    })
+    if (!barbero) return res.status(404).json({ error: 'Barbero no encontrado' })
+
+    const slotsValidos = getSlotsValidos(barbero)
+
     let duracionNueva = 30
     if (servicioId) {
       const servicio = await prisma.servicio.findUnique({ where: { id: Number(servicioId) } })
       if (servicio) duracionNueva = servicio.duracion
     }
 
-    // Obtener turnos activos del barbero ese día con la duración de cada servicio
     const turnosOcupados = await prisma.turno.findMany({
       where: { barberoId: Number(barberoId), fecha, estado: 'activo' },
       include: { servicio: true },
@@ -85,7 +108,7 @@ const listarTurnosDisponibles = async (req, res) => {
     const esHoy = fecha === hoyArgentina()
     const ahoraMin = esHoy ? horaActualMinutos() : -1
 
-    const disponibles = HORARIOS.filter((slot) => {
+    const disponibles = slotsValidos.filter((slot) => {
       const slotMin = toMinutes(slot)
       if (esHoy && slotMin <= ahoraMin) return false
       return !turnosOcupados.some((t) =>
@@ -108,10 +131,6 @@ const crearTurno = async (req, res) => {
       return res.status(400).json({ error: 'Faltan datos obligatorios' })
     }
 
-    if (!HORARIOS.includes(hora)) {
-      return res.status(400).json({ error: 'Hora no válida' })
-    }
-
     const hoy = hoyArgentina()
     if (fecha < hoy) {
       return res.status(400).json({ error: 'No se pueden reservar turnos en fechas pasadas' })
@@ -120,8 +139,14 @@ const crearTurno = async (req, res) => {
       return res.status(400).json({ error: 'No se pueden reservar turnos en horarios ya transcurridos' })
     }
 
-    const barbero = await prisma.barbero.findUnique({ where: { id: Number(barberoId) } })
+    const barbero = await prisma.barbero.findUnique({ where: { id: Number(barberoId) }, include: { sucursal: true } })
     if (!barbero) return res.status(404).json({ error: 'Barbero no encontrado' })
+
+    const slotsValidos = getSlotsValidos(barbero)
+    if (!slotsValidos.includes(hora)) {
+      return res.status(400).json({ error: 'Ese horario no está disponible para este barbero' })
+    }
+
     if (!barbero.agendaAbierta) {
       return res.status(409).json({ error: 'Este peluquero tiene la agenda cerrada y no acepta nuevas reservas por el momento.' })
     }
@@ -179,8 +204,11 @@ const actualizarTurno = async (req, res) => {
       const newHora = hora || turno.hora
       const newBarberoId = barberoId ? Number(barberoId) : turno.barberoId
 
-      if (hora && !HORARIOS.includes(hora)) {
-        return res.status(400).json({ error: 'Hora no válida' })
+      if (hora) {
+        const barberoActual = await prisma.barbero.findUnique({ where: { id: newBarberoId }, include: { sucursal: true } })
+        if (!getSlotsValidos(barberoActual).includes(hora)) {
+          return res.status(400).json({ error: 'Hora no válida para este barbero' })
+        }
       }
 
       const newServicioId = servicioId ? Number(servicioId) : turno.servicioId

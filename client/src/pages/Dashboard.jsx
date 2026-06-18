@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toggleAgenda } from '../api'
+import PanelHorarios from '../components/Dashboard/PanelHorarios'
 
 const hoy = new Date().toISOString().split('T')[0]
 
@@ -113,6 +114,10 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
+
+        {barbero.sucursal && (
+          <PanelHorarios barbero={barbero} onActualizar={setBarbero} />
+        )}
 
         <div className={`mb-5 rounded-xl border px-5 py-4 flex items-center justify-between gap-4 ${
           agendaAbierta ? 'bg-white border-[#e8e2d8]' : 'bg-[#1e2535] border-[#1e2535]'
