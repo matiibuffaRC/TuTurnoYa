@@ -13,7 +13,7 @@ const Row = ({ label, value }) => (
 
 export default function Confirmacion({ turno, onNuevoTurno }) {
   return (
-    <div className="min-h-[calc(100dvh-80px)] bg-[#f7f4ef] montserrat-alternates flex items-center justify-center px-5 py-14">
+    <div className="min-h-[calc(100dvh-90px)] bg-[#f7f4ef] montserrat-alternates flex items-center justify-center px-5 py-10">
       <div className="w-full max-w-md">
 
         <div className="text-center mb-8">

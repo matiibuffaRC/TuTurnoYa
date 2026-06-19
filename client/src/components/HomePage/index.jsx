@@ -78,12 +78,12 @@ export default function ReservarTurno() {
 
   return (
     <div className="min-h-[calc(100dvh-80px)] bg-[#f7f4ef] montserrat-alternates">
-      <div className="max-w-xl mx-auto px-5 py-14">
+      <div className="max-w-xl mx-auto px-5 py-14 pt-6 md:pt-14">
 
-        <div className="mb-10">
-          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700 mb-2">Reserva online</p>
+        <div className="mb-8">
+          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700">Reserva online</p>
           <h1 className="text-3xl font-black text-[#1e2535] leading-tight">Reservar turno</h1>
-          <p className="text-[#8a8070] mt-1.5 text-sm">Seguí los pasos para confirmar tu reserva.</p>
+          <p className="text-[#8a8070] text-xs">Seguí los pasos para confirmar tu reserva.</p>
         </div>
 
         <PasoIndicador pasoActual={paso} />
