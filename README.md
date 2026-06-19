@@ -1,18 +1,28 @@
-## TuTurnoYa
+# TuTurnoYa
 
-Para correr de manera local el proyecto, se deberá clonar y trabajar en 2 consolas diferentes el frontend y el backend.
+¡Bienvenido a **TuTurnoYa**! Para ejecutar este proyecto de forma local, necesitarás clonar el repositorio y trabajar con **dos terminales diferentes**: una para el frontend y otra para el backend. 
 
-Para esto se deberá entrar a cada fichero correspondiente e installar las dependencias necesarias para la ejecución del proyecto.
+En cada sección deberás instalar las dependencias necesarias antes de iniciar la aplicación.
 
-Lista de comandos para correr el frontend desde el fichero padre ("TuTurnoYa"):
-  - cd cliente
-  - npm install
-  - npm run dev
+---
 
-Lista de comandos para correr el backend desde el fichero padre:
-  - cd server
-  - npm install
-  - cd src
-  - node server.js
+## 🚀 Instrucciones de Ejecución
 
-Una vez en la web se deberá ingresar al local host indicado en la terminal que se arrancó el frontend y para ver el servidor correr se deberá hacer lo mismo pero desde el lado del backend.
+### 💻 Frontend
+Desde la raíz del proyecto (`TuTurnoYa`), ejecuta los siguientes comandos en tu primera terminal:
+
+```bash
+cd cliente
+npm install
+npm run dev
+```
+
+## ⚙️ Backend
+Desde la raíz del proyecto (TuTurnoYa), ejecuta los siguientes comandos en tu segunda terminal:
+
+```bash
+cd server
+npm install
+cd src
+node server.js
+```
