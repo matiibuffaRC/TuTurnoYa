@@ -1,6 +1,6 @@
 # TuTurnoYa
 
-¡Bienvenido a **TuTurnoYa**! Para ejecutar este proyecto de forma local, necesitarás clonar el repositorio y trabajar con **dos terminales diferentes**: una para el frontend y otra para el backend. 
+Para ejecutar este proyecto de forma local, necesitarás clonar el repositorio y trabajar con **dos terminales diferentes**: una para el frontend y otra para el backend. 
 
 En cada sección deberás instalar las dependencias necesarias antes de iniciar la aplicación.
 
