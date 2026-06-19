@@ -4,27 +4,27 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [barbero, setBarbero] = useState(() => {
-    const stored = localStorage.getItem('barbero')
+    const stored = sessionStorage.getItem('barbero')
     return stored ? JSON.parse(stored) : null
   })
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null)
+  const [token, setToken] = useState(() => sessionStorage.getItem('token') || null)
 
   const login = (tokenData, barberoData) => {
-    localStorage.setItem('token', tokenData)
-    localStorage.setItem('barbero', JSON.stringify(barberoData))
+    sessionStorage.setItem('token', tokenData)
+    sessionStorage.setItem('barbero', JSON.stringify(barberoData))
     setToken(tokenData)
     setBarbero(barberoData)
   }
 
   const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('barbero')
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('barbero')
     setToken(null)
     setBarbero(null)
   }
 
   const actualizarBarbero = (barberoData) => {
-    localStorage.setItem('barbero', JSON.stringify(barberoData))
+    sessionStorage.setItem('barbero', JSON.stringify(barberoData))
     setBarbero(barberoData)
   }
 
