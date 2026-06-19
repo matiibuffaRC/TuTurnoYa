@@ -7,7 +7,7 @@ const toMinutes = (hhmm) => {
 
 const DIAS_ES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const MESES_ES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
-const DIAS_LABORABLES = [1, 2, 3, 4, 5]
+const DIAS_LABORABLES = [2, 3, 4, 5, 6]
 
 function getFecha(base, delta) {
     const d = new Date(base + 'T00:00:00')
