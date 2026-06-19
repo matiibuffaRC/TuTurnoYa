@@ -31,6 +31,11 @@ const getSlotsValidos = (barbero) => {
   return todosSucursal.filter(s => habilitados.includes(s))
 }
 
+const esDiaLaborable = (fechaISO) => {
+  const dia = new Date(fechaISO + 'T00:00:00').getDay()
+  return dia !== 0 && dia !== 1 // 0=dom, 1=lun
+}
+
 const hoyArgentina = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' })
 const horaActualMinutos = () => {
   const now = new Date()
@@ -86,6 +91,10 @@ const listarTurnosDisponibles = async (req, res) => {
       return res.status(400).json({ error: 'Faltan parámetros barberoId y fecha' })
     }
 
+    if (!esDiaLaborable(fecha)) {
+      return res.json([])
+    }
+
     const barbero = await prisma.barbero.findUnique({
       where: { id: Number(barberoId) },
       include: { sucursal: true },
@@ -134,6 +143,9 @@ const crearTurno = async (req, res) => {
     const hoy = hoyArgentina()
     if (fecha < hoy) {
       return res.status(400).json({ error: 'No se pueden reservar turnos en fechas pasadas' })
+    }
+    if (!esDiaLaborable(fecha)) {
+      return res.status(400).json({ error: 'No se atiende los domingos ni los lunes' })
     }
     if (fecha === hoy && toMinutes(hora) <= horaActualMinutos()) {
       return res.status(400).json({ error: 'No se pueden reservar turnos en horarios ya transcurridos' })

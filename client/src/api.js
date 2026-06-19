@@ -23,5 +23,3 @@ export const updateHorarios = (barberoId, horarios, token) =>
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ horarios }),
   }).then(r => r.json())
-
-export const getBarbero = (id) => fetch(`${BASE}/barberos/${id}`).then(r => r.json())

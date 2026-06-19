@@ -4,8 +4,11 @@ const CAMPOS = [
   { label: 'Email', field: 'email', type: 'email', placeholder: 'juan@email.com' },
 ]
 
+const emailValido = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
 export default function PasoDatos({ form, error, onChange, onAtras, onConfirmar }) {
-  const completo = form.nombre && form.apellido && form.email
+  const emailError = form.email && !emailValido(form.email)
+  const completo = form.nombre.trim() && form.apellido.trim() && emailValido(form.email)
 
   return (
     <div className="space-y-6">
@@ -20,8 +23,15 @@ export default function PasoDatos({ form, error, onChange, onAtras, onConfirmar 
               placeholder={placeholder}
               value={form[field]}
               onChange={(e) => onChange(field, e.target.value)}
-              className="w-full border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-5 py-3.5 text-sm text-[#1e2535] font-medium placeholder:text-[#c0b8a8] focus:outline-none focus:border-[#1e2535] focus:bg-white transition-all"
+              className={`w-full border rounded-xl px-5 py-3.5 text-sm text-[#1e2535] font-medium placeholder:text-[#c0b8a8] focus:outline-none transition-all
+                ${field === 'email' && emailError
+                  ? 'border-red-300 bg-red-50 focus:border-red-400'
+                  : 'border-[#e8e2d8] bg-[#faf8f5] focus:border-[#1e2535] focus:bg-white'
+                }`}
             />
+            {field === 'email' && emailError && (
+              <p className="text-xs text-red-600 font-medium mt-1.5 ml-1">Ingresá un email válido</p>
+            )}
           </div>
         ))}
       </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 const LINKS_CLIENTE = [
     { to: '/', label: 'Reservar turno' },
@@ -14,14 +15,13 @@ const LINKS_PELUQUERO = [
 export default function Navbar() {
     const { pathname } = useLocation()
     const navigate = useNavigate()
+    const { barbero, logout } = useAuth()
     const [abierto, setAbierto] = useState(false)
-    const barbero = JSON.parse(localStorage.getItem('barbero') || 'null')
 
     const links = barbero ? LINKS_PELUQUERO : LINKS_CLIENTE
 
     const cerrarSesion = () => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('barbero')
+        logout()
         navigate('/')
     }
 
