@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 const toMinutes = (hhmm) => {
     const [h, m] = hhmm.split(':').map(Number)
@@ -18,7 +18,7 @@ function getFecha(base, delta) {
         num: d.getDate(),
         mes: MESES_ES[d.getMonth()],
         laborable: DIAS_LABORABLES.includes(d.getDay()),
-        pasado: delta < 0,
+        pasado: delta < 0 || !DIAS_LABORABLES.includes(d.getDay()),
     }
 }
 

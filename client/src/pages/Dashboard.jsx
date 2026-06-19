@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toggleAgenda } from '../api'
+import { useAuth } from '../context/AuthContext'
 import PanelHorarios from '../components/Dashboard/PanelHorarios'
 
 const hoy = new Date().toISOString().split('T')[0]
@@ -26,27 +27,23 @@ const IconUnlock = () => (
 
 export default function Dashboard() {
   const navigate = useNavigate()
-  const [barbero, setBarbero] = useState(null)
+  const { barbero, token, actualizarBarbero, logout } = useAuth()
   const [turnos, setTurnos] = useState([])
   const [fecha, setFecha] = useState(hoy)
   const [loading, setLoading] = useState(false)
   const [toggling, setToggling] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const data = localStorage.getItem('barbero')
-    if (!token || !data) { navigate('/admins-panel'); return }
-    const b = JSON.parse(data)
-    setBarbero(b)
-    fetchTurnos(b.id, hoy, token)
-  }, [navigate])
+    if (!token || !barbero) { navigate('/admins-panel'); return }
+    fetchTurnos(barbero.id, hoy, token)
+  }, [navigate, token, barbero])
 
-  const fetchTurnos = async (barberoId, fecha, token) => {
+  const fetchTurnos = async (barberoId, f, tok) => {
     setLoading(true)
     try {
       const res = await fetch(
-        `http://localhost:3001/turnos/barbero/${barberoId}?fecha=${fecha}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `http://localhost:3001/turnos/barbero/${barberoId}?fecha=${f}`,
+        { headers: { Authorization: `Bearer ${tok}` } }
       )
       const data = await res.json()
       setTurnos(Array.isArray(data) ? data : [])
@@ -58,24 +55,20 @@ export default function Dashboard() {
 
   const handleFecha = (f) => {
     setFecha(f)
-    fetchTurnos(barbero.id, f, localStorage.getItem('token'))
+    fetchTurnos(barbero.id, f, token)
   }
 
   const handleToggleAgenda = async () => {
     setToggling(true)
-    const token = localStorage.getItem('token')
     const updated = await toggleAgenda(barbero.id, token)
     if (!updated.error) {
-      const newBarbero = { ...barbero, agendaAbierta: updated.agendaAbierta }
-      setBarbero(newBarbero)
-      localStorage.setItem('barbero', JSON.stringify(newBarbero))
+      actualizarBarbero({ ...barbero, agendaAbierta: updated.agendaAbierta })
     }
     setToggling(false)
   }
 
   const cerrarSesion = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('barbero')
+    logout()
     navigate('/admins-panel')
   }
 
@@ -116,7 +109,7 @@ export default function Dashboard() {
         </div>
 
         {barbero.sucursal && (
-          <PanelHorarios barbero={barbero} onActualizar={setBarbero} />
+          <PanelHorarios barbero={barbero} onActualizar={actualizarBarbero} />
         )}
 
         <div className={`mb-5 rounded-xl border px-5 py-4 flex items-center justify-between gap-4 ${

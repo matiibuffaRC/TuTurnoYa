@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { updateHorarios } from '../../api'
+import { useAuth } from '../../context/AuthContext'
 
 const toMinutes = (hhmm) => {
   const [h, m] = hhmm.split(':').map(Number)
@@ -20,6 +21,7 @@ const generarSlots = (apertura, cierre) => {
 }
 
 export default function PanelHorarios({ barbero, onActualizar }) {
+  const { token } = useAuth()
   const sucursal = barbero.sucursal
   const todosSlots = generarSlots(sucursal.horarioApertura, sucursal.horarioCierre)
   const iniciales = barbero.horariosHabilitados
@@ -51,13 +53,10 @@ export default function PanelHorarios({ barbero, onActualizar }) {
 
   const guardar = async () => {
     setGuardando(true)
-    const token = localStorage.getItem('token')
     const horarios = todosSlots.filter(s => seleccionados.has(s))
     const updated = await updateHorarios(barbero.id, horarios, token)
     if (!updated.error) {
-      const newBarbero = { ...barbero, horariosHabilitados: JSON.stringify(horarios) }
-      localStorage.setItem('barbero', JSON.stringify(newBarbero))
-      onActualizar(newBarbero)
+      onActualizar({ ...barbero, horariosHabilitados: JSON.stringify(horarios) })
       setGuardado(true)
     }
     setGuardando(false)

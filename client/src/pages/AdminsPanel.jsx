@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { InputField } from '../components/AdminsPanel/InputField'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const AdminsPanel = () => {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [credentials, setCredentials] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -18,15 +20,14 @@ const AdminsPanel = () => {
     setError('')
     setIsLoading(true)
     try {
-      const res = await fetch('http://localhost:3001/auth/login', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Credenciales inválidas'); setIsLoading(false); return }
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('barbero', JSON.stringify(data.barbero))
+      login(data.token, data.barbero)
       navigate('/dashboard')
     } catch {
       setError('No se pudo conectar con el servidor')
