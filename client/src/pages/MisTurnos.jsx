@@ -36,16 +36,18 @@ export default function MisTurnos() {
         <div className="min-h-[calc(100dvh-80px)] bg-[#f7f4ef] montserrat-alternates">
             <div className="max-w-2xl mx-auto px-5 py-14">
 
-                <div className="mb-10">
-                    <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700 mb-2">Gestión</p>
+                <div className="mb-5">
+                    <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700">Gestión</p>
                     <h1 className="text-3xl font-black text-[#1e2535] leading-tight">Mis turnos</h1>
-                    <p className="text-[#8a8070] mt-1.5 text-sm">Ingresá tu email para ver y gestionar tus reservas.</p>
+                    <p className="text-[#8a8070] text-sm">Ingresá tu email para ver y gestionar tus reservas.</p>
                 </div>
 
-                <form onSubmit={buscar} className="bg-white rounded-2xl border border-[#e8e2d8] p-5 flex gap-3 mb-8">
-                    <input type="email" required placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-4 py-3 text-sm text-[#1e2535] font-medium placeholder:text-[#c0b8a8] focus:outline-none focus:border-[#1e2535] focus:bg-white transition-all"/>
+                <form onSubmit={buscar} className="bg-white rounded-full border border-[#e8e2d8] p-5 flex gap-3 mb-8">
+                    <input type="email" required placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 border border-[#e8e2d8] bg-[#faf8f5] rounded-full px-4 py-3 text-sm text-[#1e2535] font-medium placeholder:text-[#c0b8a8] focus:outline-none focus:border-[#1e2535] focus:bg-white transition-all"/>
                     <button type="submit" className="cursor-pointer bg-[#1e2535] text-white px-3 py-2 rounded-full font-semibold text-sm hover:bg-[#2d3748] transition-colors whitespace-nowrap disabled:opacity-50" disabled={loading} >
-                        {loading ? 'Buscando...' : (
+                        {loading ? (
+                            <img src={LupaIcon} alt="Buscar" className="w-6 h-6 inline-block invert" />
+                            ) : (
                             <img src={LupaIcon} alt="Buscar" className="w-6 h-6 inline-block invert" />
                         )}
                     </button>
@@ -73,8 +75,8 @@ export default function MisTurnos() {
                                 </div>
                                 <div className="space-y-0.5">
                                     <p className="text-sm text-[#1e2535]">
-                                    <span className="font-semibold">{t.barbero.nombre} {t.barbero.apellido}</span>
-                                    <span className="text-[#8a8070]"> — {t.barbero.sucursal.nombre}</span>
+                                        <span className="font-semibold">{t.barbero.nombre} {t.barbero.apellido}</span>
+                                        <span className="text-[#8a8070]"> — {t.barbero.sucursal.nombre}</span>
                                     </p>
                                     <p className="text-xs text-[#8a8070]">{t.barbero.sucursal.direccion}</p>
                                     <p className="text-xs text-[#8a8070]">

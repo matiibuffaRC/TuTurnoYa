@@ -112,11 +112,11 @@ export default function Dashboard() {
           <PanelHorarios barbero={barbero} onActualizar={actualizarBarbero} />
         )}
 
-        <div className={`mb-5 rounded-xl border px-5 py-4 flex items-center justify-between gap-4 ${
+        <div className={`mb-5 rounded-full border px-5 py-4 flex items-center justify-between gap-4 ${
           agendaAbierta ? 'bg-white border-[#e8e2d8]' : 'bg-[#1e2535] border-[#1e2535]'
         }`}>
           <div className="flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
               agendaAbierta ? 'bg-green-50 text-green-700' : 'bg-white/10 text-amber-400'
             }`}>
               {agendaAbierta ? <IconUnlock /> : <IconLock />}
@@ -135,7 +135,7 @@ export default function Dashboard() {
           <button
             onClick={handleToggleAgenda}
             disabled={toggling}
-            className={`text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap ${
+            className={`text-xs font-bold px-4 py-2.5 rounded-full transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap ${
               agendaAbierta
                 ? 'bg-[#1e2535] text-white hover:bg-[#2d3748]'
                 : 'bg-white text-[#1e2535] hover:bg-[#f7f4ef]'

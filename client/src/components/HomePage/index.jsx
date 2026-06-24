@@ -78,7 +78,7 @@ export default function ReservarTurno() {
 
   return (
     <div className="min-h-[calc(100dvh-80px)] bg-[#f7f4ef] montserrat-alternates">
-      <div className="max-w-xl mx-auto px-5 py-14 pt-6 md:pt-14">
+      <div className="max-w-xl mx-auto px-5 py-14 pt-6 pb-5">
 
         <div className="mb-8">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700">Reserva online</p>
