@@ -28,11 +28,6 @@ export default function Navbar() {
     const toggleMenu = () => setAbierto((prev) => !prev)
     const cerrarMenu = () => setAbierto(false)
 
-    useEffect(() => {
-        document.body.style.overflow = abierto ? 'hidden' : ''
-        return () => { document.body.style.overflow = '' }
-    }, [abierto])
-
     return (
         <>
             <nav className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-white/5 montserrat-alternates">
@@ -66,9 +61,9 @@ export default function Navbar() {
 
                     {/* Botón hamburguesa */}
                     <button onClick={toggleMenu} aria-label={abierto ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={abierto} className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg cursor-pointer transition-colors">
-                        <span className={`block w-5 h-0.5 bg-white rounded-full transition-all duration-300 ${ abierto ? 'translate-y-1 rotate-45' : '-translate-y-1' }`}/>
+                        <span className={`block w-5 h-0.5 bg-white rounded-full transition-all duration-300 ${ abierto ? 'translate-y-0.5 rotate-45' : '-translate-y-1' }`}/>
                         <span className={`block w-5 h-0.5 bg-white rounded-full transition-all duration-300 ${ abierto ? 'opacity-0 scale-x-0' : 'opacity-100 scale-x-100' }`}/>
-                        <span className={`block w-5 h-0.5 bg-white rounded-full transition-all duration-300 ${ abierto ? '-translate-y-1 -rotate-45' : 'translate-y-1' }`}/>
+                        <span className={`block w-5 h-0.5 bg-white rounded-full transition-all duration-300 ${ abierto ? '-translate-y-0.5 -rotate-45' : 'translate-y-1' }`}/>
                     </button>
                 </div>
             </nav>
