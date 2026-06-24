@@ -27,3 +27,10 @@ cd src
 node server.js
 ```
 Deploy en vercel:
+
+---
+
+Stack tecnológico: 
+ - Front: React | TailwindCSS
+ - Back: Prisma | Express | Prisma
+ - Bases de datos: SQLite
