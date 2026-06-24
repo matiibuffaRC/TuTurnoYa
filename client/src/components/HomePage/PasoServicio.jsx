@@ -14,7 +14,7 @@ export default function PasoServicio({ servicios, form, onServicio, onAtras, onS
   return (
     <div className="space-y-7">
       <div>
-        <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-3">Servicio</p>
+        <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-1">Servicio</p>
         <div className="space-y-2">
           {servicios.map((s) => {
             const seleccionado = form.servicioId === String(s.id)
@@ -22,7 +22,7 @@ export default function PasoServicio({ servicios, form, onServicio, onAtras, onS
               <button
                 key={s.id}
                 onClick={() => onServicio(String(s.id))}
-                className={`w-full flex items-center justify-between px-5 py-4 rounded-xl border transition-all duration-200 cursor-pointer ${
+                className={`w-full flex items-center justify-between px-4 py-2 rounded-xl border transition-all duration-200 cursor-pointer ${
                   seleccionado
                     ? 'border-[#1e2535] bg-[#1e2535]'
                     : 'border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white'
@@ -32,7 +32,7 @@ export default function PasoServicio({ servicios, form, onServicio, onAtras, onS
                   <p className={`font-semibold text-sm ${seleccionado ? 'text-white' : 'text-[#1e2535]'}`}>
                     {s.tipo}
                   </p>
-                  <p className={`text-xs mt-0.5 flex items-center gap-1 ${seleccionado ? 'text-white/60' : 'text-[#8a8070]'}`}>
+                  <p className={`text-xs mt-0.5 flex items-center gap-0.5 ${seleccionado ? 'text-white/60' : 'text-[#8a8070]'}`}>
                     <IconClock /> {s.duracion} min
                   </p>
                 </div>
@@ -55,14 +55,14 @@ export default function PasoServicio({ servicios, form, onServicio, onAtras, onS
       <div className="flex gap-3">
         <button
           onClick={onAtras}
-          className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-xl font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e2535] transition-colors"
+          className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-full font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e2535] transition-colors"
         >
           Atrás
         </button>
         <button
           disabled={!form.servicioId}
           onClick={onSiguiente}
-          className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-xl font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors"
+          className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors"
         >
           Continuar
         </button>

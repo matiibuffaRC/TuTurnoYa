@@ -23,7 +23,7 @@ export default function PasoDatos({ form, error, onChange, onAtras, onConfirmar 
               placeholder={placeholder}
               value={form[field]}
               onChange={(e) => onChange(field, e.target.value)}
-              className={`w-full border rounded-xl px-5 py-3.5 text-sm text-[#1e2535] font-medium placeholder:text-[#c0b8a8] focus:outline-none transition-all
+              className={`w-full border rounded-full px-5 py-3.5 text-sm text-[#1e2535] font-medium placeholder:text-[#c0b8a8] focus:outline-none transition-all
                 ${field === 'email' && emailError
                   ? 'border-red-300 bg-red-50 focus:border-red-400'
                   : 'border-[#e8e2d8] bg-[#faf8f5] focus:border-[#1e2535] focus:bg-white'
@@ -46,14 +46,14 @@ export default function PasoDatos({ form, error, onChange, onAtras, onConfirmar 
       <div className="flex gap-3 pt-1">
         <button
           onClick={onAtras}
-          className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-xl font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e2535] transition-colors"
+          className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-full font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e2535] transition-colors"
         >
           Atrás
         </button>
         <button
           disabled={!completo}
           onClick={onConfirmar}
-          className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-xl font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors"
+          className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors"
         >
           Confirmar turno
         </button>

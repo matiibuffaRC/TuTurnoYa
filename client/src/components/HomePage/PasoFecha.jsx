@@ -66,7 +66,7 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
                                 onClick={() => handleFecha(iso, pasado)}
                                 disabled={pasado}
                                 aria-label={`${esHoy ? 'Hoy' : dia} ${num} de ${mes}${pasado ? ' (fecha pasada)' : ''}${laborable && !pasado ? ' · día laborable' : ''}`}
-                                className={`flex flex-col items-center justify-center py-2.5  rounded-xl border text-sm transition-all duration-200
+                                className={`flex flex-col items-center justify-center py-2.5  rounded-2xl border text-sm transition-all duration-200
                                     ${pasado
                                     ? 'border-[#e8e2d8] bg-[#faf8f5] opacity-35 cursor-not-allowed'
                                     : seleccionada
@@ -116,9 +116,9 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
             {form.fecha && horariosFiltrados.length > 0 && (
                 <div>
                     <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-3">Horario disponible</p>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-5 gap-2">
                         {horariosFiltrados.map((h) => (
-                        <button key={h} onClick={() => onHora(h)} className={`py-2.5 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                        <button key={h} onClick={() => onHora(h)} className={`py-2.5 rounded-full border text-sm font-semibold transition-all duration-200 cursor-pointer ${
                             form.hora === h
                                 ? 'border-[#1e2535] bg-[#1e2535] text-white'
                                 : 'border-[#e8e2d8] bg-[#faf8f5] text-[#1e2535] hover:border-[#c8c0b0] hover:bg-white'
@@ -145,13 +145,13 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
             <div className="flex gap-3">
                 <button
                     onClick={onAtras}
-                    className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-xl font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e25    35] transition-colors">
+                    className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-full font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e25    35] transition-colors">
                     Atrás
                 </button>
                 <button
                     disabled={!form.fecha || !form.hora}
                     onClick={onSiguiente    }
-                    className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-xl font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors">
+                    className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors">
                     Continuar
                 </button>
             </div>
