@@ -26,7 +26,6 @@ npm install
 cd src
 node server.js
 ```
-Deploy en vercel:
 
 ---
 
