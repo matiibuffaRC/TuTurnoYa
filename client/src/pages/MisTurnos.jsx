@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { getTurnosPorEmail, cancelarTurno } from '../api'
-import LupaIcon from "../../public/icons/lupaIcon.svg"
+import LupaIcon from "../data/icons/lupaIcon.svg"
 
 const IconCalendar = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -12,22 +12,29 @@ const IconCalendar = () => (
 )
 
 export default function MisTurnos() {
-    const [email, setEmail] = useState('')
-    const [turnos, setTurnos] = useState([])
-    const [buscado, setBuscado] = useState(false)
-    const [loading, setLoading] = useState(false)
+    const [email, setEmail] = useState('');
+    const [turnos, setTurnos] = useState([]);
+    const [buscado, setBuscado] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const buscar = async (e) => {
-        e.preventDefault()
-        setLoading(true)
-        const data = await getTurnosPorEmail(email)
-        setTurnos(data)
-        setBuscado(true)
-        setLoading(false)
+        e.preventDefault();
+        setLoading(true);
+        const data = await getTurnosPorEmail(email);
+        // Validar si llega o no la información de las sucu
+        if (!data) {
+            console.log("No se han podido obtener las sucursales!");
+        }else{
+            setTurnos(data);
+        }
+
+        setBuscado(true);
+        setLoading(false);
     }
 
     const cancelar = async (id) => {
-        if (!confirm('¿Cancelar este turno?')) return
+        if (!confirm('¿Desea cancelar este turno?')) return
+        // Llamamos la función desde "api.js"
         await cancelarTurno(id)
         setTurnos((prev) => prev.filter((t) => t.id !== id))
     }
