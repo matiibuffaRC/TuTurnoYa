@@ -61,33 +61,21 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
                         const esHoy = iso === hoy
                         const seleccionada = form.fecha === iso
                         return (
-                            <button
-                                key={iso}
-                                onClick={() => handleFecha(iso, pasado)}
-                                disabled={pasado}
-                                aria-label={`${esHoy ? 'Hoy' : dia} ${num} de ${mes}${pasado ? ' (fecha pasada)' : ''}${laborable && !pasado ? ' · día laborable' : ''}`}
-                                className={`flex flex-col items-center justify-center py-2.5  rounded-2xl border text-sm transition-all duration-200
-                                    ${pasado
-                                    ? 'border-[#e8e2d8] bg-[#faf8f5] opacity-35 cursor-not-allowed'
-                                    : seleccionada
-                                        ? 'border-[#1e2535] bg-[#1e2535] cursor-pointer'
-                                        : 'border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white cursor-pointer'
-                                    }`}
-                                >
+                            <button key={iso} onClick={() => handleFecha(iso, pasado)} disabled={pasado} aria-label={`${esHoy ? 'Hoy' : dia} ${num} de ${mes}${pasado ? ' (fecha pasada)' : ''}${laborable && !pasado ? ' · día laborable' : ''}`} className={`flex flex-col items-center justify-center py-2.5  rounded-2xl border text-sm transition-all duration-200 ${pasado ? 'border-[#e8e2d8] bg-[#faf8f5] opacity-35 cursor-not-allowed' : seleccionada ? 'border-[#1e2535] bg-[#1e2535] cursor-pointer' : 'border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white cursor-pointer' }`} >
                                 <span className={`text-[10px] font-bold tracking-wider uppercase leading-none mb-1 ${seleccionada ? 'text-[#7a8499]' : 'text-[#a09880]'}`}>
                                     {esHoy ? 'Hoy' : dia}
                                 </span>
+
                                 <span className={`text-base font-bold leading-none ${seleccionada ? 'text-white' : 'text-[#1e2535]'}`}>
                                     {num}
                                 </span>
+
                                 <span className={`text-[10px] mt-1 leading-none ${seleccionada ? 'text-[#7a8499]' : 'text-[#a09880]'}`}>
                                     {mes}
                                 </span>
+
                                 {laborable && !pasado && (
-                                    <span
-                                    aria-hidden="true"
-                                    className={`w-1.5 h-1.5 rounded-full mt-1.5 ${seleccionada ? 'bg-[#6ee7a0]' : 'bg-[#4ade80]'}`}
-                                    />
+                                    <span aria-hidden="true" className={`w-1.5 h-1.5 rounded-full mt-1.5 ${seleccionada ? 'bg-[#6ee7a0]' : 'bg-[#4ade80]'}`} />
                                 )}
                             </button>
                         )
@@ -95,11 +83,7 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
                     </div>
 
                     {/* Flecha derecha */}
-                    <button
-                        onClick={() => setOffset(o => o + 1)}
-                        aria-label="Días siguientes"
-                        className="shrink-0 w-9 h-9 rounded-xl border border-[#e8e2d8] bg-[#faf8f5] flex items-center justify-center text-[#8a8070] hover:border-[#c8c0b0] hover:text-[#1e2535] hover:bg-white transition-all cursor-pointer"
-                    >
+                    <button onClick={() => setOffset(o => o + 1)} aria-label="Días siguientes" className="shrink-0 w-9 h-9 rounded-xl border border-[#e8e2d8] bg-[#faf8f5] flex items-center justify-center text-[#8a8070] hover:border-[#c8c0b0] hover:text-[#1e2535] hover:bg-white transition-all cursor-pointer" >
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
@@ -143,15 +127,11 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
             )}
 
             <div className="flex gap-3">
-                <button
-                    onClick={onAtras}
-                    className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-full font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e25    35] transition-colors">
+                <button onClick={onAtras} className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-full font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e25    35] transition-colors">
                     Atrás
                 </button>
-                <button
-                    disabled={!form.fecha || !form.hora}
-                    onClick={onSiguiente    }
-                    className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors">
+                
+                <button disabled={!form.fecha || !form.hora} onClick={onSiguiente    } className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors">
                     Continuar
                 </button>
             </div>
