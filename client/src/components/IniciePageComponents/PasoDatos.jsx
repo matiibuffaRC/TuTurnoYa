@@ -4,7 +4,9 @@ const CAMPOS = [
     { label: 'Email', field: 'email', type: 'email', placeholder: 'juan@email.com' },
 ]
 
-const emailValido = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]    +$/.test(email)
+const emailValido = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 export default function PasoDatos({ form, error, onChange, onAtras, onConfirmar }) {
     const emailError = form.email && !emailValido(form.email)
