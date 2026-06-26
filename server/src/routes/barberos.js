@@ -7,7 +7,7 @@ const { verificarToken } = require('../middlewares/authMiddleware')
 
 // Validamos que nos estén vacíos dichos campos
 const validarBarbero = [
-    body('nombre').trim().notEmpty().withMessage('El nombre es obligatorio'),
+    body('nombre').trim().notEmpty().withMessage    ('El nombre es obligatorio'),
     body('apellido').trim().notEmpty().withMessage('El apellido es obligatorio'),
     body('telefono').trim().notEmpty().withMessage('El teléfono es obligatorio'),
     body('sucursalId')
