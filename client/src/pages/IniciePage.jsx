@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
-import { getSucursales, getBarberos, getServicios, getDisponibles, crearTurno } from '../api'
+import { getSucursales } from '../services/sucursal.service'
+import { getBarberos } from '../services/barbero.service'
+import { getServicios } from '../services/servicio.service'
+import { getDisponibles } from '../services/turno.service'
+import { crearTurno } from '../services/turno.service'
+
 
 import PasoIndicador from '../components/IniciePageComponents/PasoIndicador'
 import PasoSucursal from '../components/IniciePageComponents/PasoSucursal'

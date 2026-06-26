@@ -20,9 +20,8 @@ export default function PasoIndicador({ pasoActual }) {
                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                 <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
-                            ) : (
-                            i + 1
-                            )}
+                            ) : (i + 1)
+                            }
                         </div>
                         <span className={`hidden sm:block text-xs font-medium transition-colors duration-300 whitespace-nowrap ${
                             i === pasoActual ? 'text-[#1e2535]' : 'text-[#a09880]'

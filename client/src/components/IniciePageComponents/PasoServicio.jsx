@@ -19,26 +19,26 @@ export default function PasoServicio({ servicios, form, onServicio, onAtras, onS
                 {servicios.map((s) => {
                     const seleccionado = form.servicioId === String(s.id)
                     return (
-                    <button key={s.id} onClick={() => onServicio(String(s.id))} className={`w-full flex items-center justify-between px-4 py-2 rounded-xl border transition-all duration-200 cursor-pointer ${ seleccionado ? 'border-[#1e2535] bg-[#1e2535]' : 'border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white' }`} >
-                        <div className="text-left">
-                            <p className={`font-semibold text-sm ${seleccionado ? 'text-white' : 'text-[#1e2535]'}`}>
-                                {s.tipo}
-                            </p>
-                            <p className={`text-xs mt-0.5 flex items-center gap-0.5 ${seleccionado ? 'text-white/60' : 'text-[#8a8070]'}`}>
-                                <IconClock /> {s.duracion} min
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className={`text-base font-black ${seleccionado ? 'text-amber-300' : 'text-[#1e2535]'}`}>
-                                ${s.precio.toLocaleString('es-AR')}
-                            </span>
-                            {seleccionado && (
-                                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white">
-                                <IconCheck />
+                        <button key={s.id} onClick={() => onServicio(String(s.id))} className={`w-full flex items-center justify-between px-4 py-2 rounded-xl border transition-all duration-200 cursor-pointer ${ seleccionado ? 'border-[#1e2535] bg-[#1e2535]' : 'border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white' }`} >
+                            <div className="text-left">
+                                <p className={`font-semibold text-sm ${seleccionado ? 'text-white' : 'text-[#1e2535]'}`}>
+                                    {s.tipo}
+                                </p>
+                                <p className={`text-xs mt-0.5 flex items-center gap-0.5 ${seleccionado ? 'text-white/60' : 'text-[#8a8070]'}`}>
+                                    <IconClock /> {s.duracion} min
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <span className={`text-base font-black ${seleccionado ? 'text-amber-300' : 'text-[#1e2535]'}`}>
+                                    ${s.precio.toLocaleString('es-AR')}
                                 </span>
-                            )}
-                        </div>
-                    </button>
+                                {seleccionado && (
+                                    <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white">
+                                        <IconCheck />
+                                    </span>
+                                )}
+                            </div>
+                        </button>
                     )
                 })}
                 </div>
