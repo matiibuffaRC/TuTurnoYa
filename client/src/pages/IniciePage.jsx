@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { getSucursales, getBarberos, getServicios, getDisponibles, crearTurno } from '../../api'
+import { getSucursales, getBarberos, getServicios, getDisponibles, crearTurno } from '../api'
 
-import PasoIndicador from './PasoIndicador'
-import PasoSucursal from './PasoSucursal'
-import PasoServicio from './PasoServicio'
-import PasoFecha from './PasoFecha'
-import PasoDatos from './PasoDatos'
-import Confirmacion from './Confirmacion'
+import PasoIndicador from '../components/IniciePageComponents/PasoIndicador'
+import PasoSucursal from '../components/IniciePageComponents/PasoSucursal'
+import PasoServicio from '../components/IniciePageComponents/PasoServicio'
+import PasoFecha from '../components/IniciePageComponents/PasoFecha'
+import PasoDatos from '../components/IniciePageComponents/PasoDatos'
+import Confirmacion from '../components/IniciePageComponents/Confirmacion'
 
 const FORM_INICIAL = {
     sucursalId: '', barberoId: '', fecha: '', hora: '',
@@ -89,23 +89,11 @@ export default function ReservarTurno() {
                 <PasoIndicador pasoActual={paso} />
 
                 <div className="bg-white rounded-2xl border border-[#e8e2d8] shadow-sm p-7">
-                    {paso === 0 && (
-                        <PasoSucursal sucursales={sucursales} barberos={barberos} form={form} onSucursal={handleSucursal} onBarbero={handleBarbero} onSiguiente={() => setPaso(1)} />
-                    )}
-
-                    {paso === 1 && (
-                        <PasoServicio servicios={servicios} form={form} onServicio={(id) => { set('servicioId', id); handleServicio() }} onAtras={() => setPaso(0)} onSiguiente={() => setPaso(2)} />
-                    )}
-
-                    {paso === 2 && (
-                        <PasoFecha form={form} horarios={horarios} onFecha={handleFecha} onHora={(h) => set('hora', h)} onAtras={() => setPaso(1)} onSiguiente={() => setPaso(3)} />
-                    )}
-
-                    {paso === 3 && (
-                        <PasoDatos form={form} error={error} onChange={set} onAtras={() => setPaso(2)} onConfirmar={handleConfirmar} />
-                    )}
-
-                    </div>
+                    {paso === 0 && (<PasoSucursal sucursales={sucursales} barberos={barberos} form={form} onSucursal={handleSucursal} onBarbero={handleBarbero} onSiguiente={() => setPaso(1)} />)}
+                    {paso === 1 && (<PasoServicio servicios={servicios} form={form} onServicio={(id) => { set('servicioId', id); handleServicio() }} onAtras={() => setPaso(0)} onSiguiente={() => setPaso(2)} />)}
+                    {paso === 2 && (<PasoFecha form={form} horarios={horarios} onFecha={handleFecha} onHora={(h) => set('hora', h)} onAtras={() => setPaso(1)} onSiguiente={() => setPaso(3)} />)}
+                    {paso === 3 && (<PasoDatos form={form} error={error} onChange={set} onAtras={() => setPaso(2)} onConfirmar={handleConfirmar} />)}
+                </div>
             </div>
         </div>
     )
