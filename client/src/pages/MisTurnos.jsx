@@ -3,6 +3,16 @@ import { getTurnosPorEmail } from "../services/turno.service";
 import { cancelarTurno } from "../services/turno.service"
 import LupaIcon from "../data/icons/lupaIcon.svg";
 
+function formatearFecha(iso) {
+    const fecha = new Date(iso + 'T00:00:00')
+    return fecha.toLocaleDateString('es-AR', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    })
+}
+
 const IconCalendar = () => (
   <svg
     width="16"
@@ -125,7 +135,7 @@ export default function MisTurnos() {
                     </span>
                     <span className="text-[#c0b8a8]">·</span>
                     <span className="text-sm text-[#8a8070] font-medium">
-                      {t.fecha}
+                      {formatearFecha(t.fecha)}
                     </span>
                   </div>
                   <div className="space-y-0.5">
