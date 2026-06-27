@@ -24,11 +24,17 @@ const IconLock = () => (
 
 export default function PasoSucursal({ sucursales, barberos, form, onSucursal, onBarbero, onSiguiente }) {
     // Almacenamos la selección del barbero para evitar recalcularlo
+<<<<<<< HEAD
     const barberoSeleccionado = useMemo(() => {
         return barberos.find(
             (barbero) => String(barbero.id) === form.barberoId
         );
     }, [barberos, form.barberoId]);
+=======
+    const barberoSeleccionado = barberos.find(
+        (barbero) => String(barbero.id) === form.barberoId
+    );
+>>>>>>> arreglo-tuturnoya
     
     const agendaCerrada =
         barberoSeleccionado && !barberoSeleccionado.agendaAbierta
