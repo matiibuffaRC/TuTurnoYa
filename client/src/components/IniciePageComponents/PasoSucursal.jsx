@@ -23,10 +23,11 @@ const IconLock = () => (
 )
 
 export default function PasoSucursal({ sucursales, barberos, form, onSucursal, onBarbero, onSiguiente }) {
+    // Almacenamos la selección del barbero para evitar recalcularlo
     const barberoSeleccionado = barberos.find(
-        (b) => String(b.id) === form.barberoId
-    )
-
+        (barbero) => String(barbero.id) === form.barberoId
+    );
+    
     const agendaCerrada =
         barberoSeleccionado && !barberoSeleccionado.agendaAbierta
 
@@ -38,15 +39,15 @@ export default function PasoSucursal({ sucursales, barberos, form, onSucursal, o
                 </p>
 
                 <div className="space-y-2">
-                {sucursales.map((s) => (
-                    <button key={s.id} onClick={() => onSucursal(String(s.id))} className={`w-full text-left px-5 py-4 rounded-xl border transition-all duration-200 cursor-pointer ${ form.sucursalId === String(s.id) ? "border-[#1e2535] bg-[#1e2535] text-white" : "border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white" }`} >
-                        <p className={`font-semibold text-sm ${ form.sucursalId === String(s.id) ? "text-white" : "text-[#1e2535]" }`}>
-                            {s.nombre}
+                {sucursales.map((sucursal) => (
+                    <button key={sucursal.id} onClick={() => onSucursal(String(sucursal.id))} className={`w-full text-left px-5 py-4 rounded-xl border transition-all duration-200 cursor-pointer ${ form.sucursalId === String(sucursal.id) ? "border-[#1e2535] bg-[#1e2535] text-white" : "border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white" }`} >
+                        <p className={`font-semibold text-sm ${ form.sucursalId === String(sucursal.id) ? "text-white" : "text-[#1e2535]" }`}>
+                            {sucursal.nombre}
                         </p>
 
-                        <p className={`text-xs mt-1 flex items-center gap-1 ${ form.sucursalId === String(s.id) ? "text-white/70" : "text-[#8a8070]" }`} >
+                        <p className={`text-xs mt-1 flex items-center gap-1 ${ form.sucursalId === String(sucursal.id) ? "text-white/70" : "text-[#8a8070]" }`} >
                             <IconPin />
-                            {s.direccion} · {s.horarioApertura}–{s.horarioCierre}
+                            {sucursal.direccion} · {sucursal.horarioApertura}–{sucursal.horarioCierre}
                         </p>
                     </button>
                 ))}
