@@ -7,15 +7,7 @@ export default function PasoIndicador({ pasoActual }) {
                 {PASOS.map((label, i) => (
                 <div key={i} className="flex items-center flex-1 last:flex-none">
                     <div className="flex flex-col items-center gap-1.5">
-                        <div
-                            className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-300 ${
-                            i < pasoActual
-                                ? 'bg-amber-600 text-white'
-                                : i === pasoActual
-                                ? 'bg-[#1e2535] text-white ring-4 ring-[#1e2535]/10'
-                                : 'bg-[#e8e2d8] text-[#a09880]'
-                            }`}
-                        >
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-300 ${ i < pasoActual ? 'bg-amber-600 text-white' : i === pasoActual ? 'bg-[#1e2535] text-white ring-4 ring-[#1e2535]/10' : 'bg-[#e8e2d8] text-[#a09880]' }`}>
                             {i < pasoActual ? (
                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                 <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
