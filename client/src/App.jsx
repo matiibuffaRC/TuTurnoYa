@@ -1,11 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
 
-// Import components
-import Navbar from './components/Header/Navbar';
+import Navbar from './components/Header/Navbar'
 import Footer from './components/Footer/Footer'
 
-// Import pages
-import ReservarTurno from './pages/ReservarTurno'
+import IniciePage from './pages/IniciePage'
 import Servicios from './pages/Servicios'
 import MisTurnos from './pages/MisTurnos'
 import AdminsPanel from './pages/AdminsPanel'
@@ -14,19 +13,19 @@ import Dashboard from './pages/Dashboard'
 function App() {
     return (
         <BrowserRouter>
-            <div className="min-h-screen bg-slate-50">
-                {/* Headear */}
-                <Navbar />
-                {/* Diferentes pages */}
-                <Routes>
-                    <Route path="/" element={<ReservarTurno />} />
-                    <Route path="/servicios" element={<Servicios />} />
-                    <Route path="/mis-turnos" element={<MisTurnos />} />
-                    <Route path="/admins-panel" element={<AdminsPanel />}/>
-                    <Route path="/dashboard" element={<Dashboard />}/>
-                </Routes>
-                <Footer></Footer>
-            </div>
+            <AuthProvider>
+                <div className="min-h-screen bg-slate-50">
+                    <Navbar />
+                    <Routes>
+                        <Route path="/" element={<IniciePage />} />
+                        <Route path="/servicios" element={<Servicios />} />
+                        <Route path="/mis-turnos" element={<MisTurnos />} />
+                        <Route path="/admins-panel" element={<AdminsPanel />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                    </Routes>
+                    <Footer />
+                </div>
+            </AuthProvider>
         </BrowserRouter>
     )
 }
