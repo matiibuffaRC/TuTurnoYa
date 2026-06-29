@@ -12,7 +12,7 @@ const verificarToken = (req, res, next) => {
 
     try {
         const payload = jwt.verify(token, JWT_SECRET)
-        req.barbero = payload
+        req.usuario = payload
         next()
     } catch (error) {
         return res.status(403).json({ error: 'Token inválido o expirado' })

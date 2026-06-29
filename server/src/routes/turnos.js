@@ -63,8 +63,15 @@ router.get(
     turnosController.listarTurnosDisponibles
 )
 
-// Protegida — solo el barbero autenticado ve su agenda
-router.get('/barbero/:id', verificarToken, turnosController.listarTurnosBarbero)
+// Protegida — el barbero solo ve su propia agenda; SUPER_ADMIN puede ver cualquiera
+router.get('/barbero/:id', verificarToken, (req, res, next) => {
+    const esAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(req.usuario.rol)
+    const esPropioId = req.usuario.id === Number(req.params.id)
+    if (!esAdmin && !esPropioId) {
+        return res.status(403).json({ error: 'No tenés permisos para ver la agenda de otro barbero' })
+    }
+    next()
+}, turnosController.listarTurnosBarbero)
 
 // Pública — el cliente obtiene un turno por ID (para ver su confirmación)
 router.get('/:id', turnosController.obtenerTurno)

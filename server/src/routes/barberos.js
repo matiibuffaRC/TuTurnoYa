@@ -11,7 +11,9 @@ const {
     actualizarBarbero,
     eliminarBarbero,
     toggleAgenda,
-    actualizarHorarios
+    actualizarHorarios,
+    getServiciosBarbero,
+    setServiciosBarbero,
 } = require('../controllers/barberos')
 
 const validarBarbero = [
@@ -50,8 +52,13 @@ router.put(
 
 router.delete('/:id', verificarToken, autorizar('SUPER_ADMIN'), eliminarBarbero)
 
-// BARBERO autenticado (su propia agenda/horarios)
+// BARBERO autenticado (su propia agenda/horarios/servicios)
 router.patch('/:id/agenda', verificarToken, toggleAgenda)
 router.patch('/:id/horarios', verificarToken, actualizarHorarios)
+
+// Pública — el cliente la usa para saber qué servicios ofrece el barbero al reservar
+router.get('/:id/servicios', getServiciosBarbero)
+// Protegida — el barbero actualiza sus servicios
+router.patch('/:id/servicios', verificarToken, setServiciosBarbero)
 
 module.exports = router

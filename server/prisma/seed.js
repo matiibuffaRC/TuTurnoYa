@@ -105,6 +105,8 @@ async function main() {
     },
   ];
 
+  const todosLosServicios = await prisma.servicio.findMany({ select: { id: true } });
+
   for (const b of barberosData) {
     const barbero = await prisma.barbero.create({
       data: {
@@ -125,6 +127,9 @@ async function main() {
             password: barberoPasswordHash,
             rol: 'BARBERO',
           },
+        },
+        servicios: {
+          connect: todosLosServicios,
         },
       },
     });

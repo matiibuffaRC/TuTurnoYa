@@ -64,8 +64,10 @@ const crearBarbero = async (req, res) => {
             return res.status(400).json({ error: 'El email ya se encuentra registrado' });
         }
 
-        // Encriptar contraseña (usa una por defecto si no viene en el body)
-        const hash = bcrypt.hashSync(password || 'barbero123', 10);
+        if (!password) {
+            return res.status(400).json({ error: 'La contraseña es obligatoria' });
+        }
+        const hash = bcrypt.hashSync(password, 10);
 
         // 3. Creación conjunta (Transacción Atómica usando relaciones anidadas de Prisma)
         const nuevoBarbero = await prisma.barbero.create({
@@ -271,6 +273,55 @@ const actualizarHorarios = async (req, res) => {
     }
 };
 
+// GET /barberos/:id/servicios - Servicios que ofrece el barbero
+const getServiciosBarbero = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const barbero = await prisma.barbero.findUnique({
+            where: { id: Number(id) },
+            include: { servicios: true },
+        });
+        if (!barbero) {
+            return res.status(404).json({ error: 'Barbero no encontrado' });
+        }
+        return res.status(200).json(barbero.servicios);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al obtener servicios del barbero' });
+    }
+};
+
+// PATCH /barberos/:id/servicios - Actualizar selección de servicios del barbero
+const setServiciosBarbero = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { servicioIds } = req.body;
+
+        if (!Array.isArray(servicioIds)) {
+            return res.status(400).json({ error: 'servicioIds debe ser un array' });
+        }
+
+        const barbero = await prisma.barbero.findUnique({ where: { id: Number(id) } });
+        if (!barbero) {
+            return res.status(404).json({ error: 'Barbero no encontrado' });
+        }
+
+        const barberoActualizado = await prisma.barbero.update({
+            where: { id: Number(id) },
+            data: {
+                servicios: {
+                    set: servicioIds.map((sid) => ({ id: Number(sid) })),
+                },
+            },
+            include: { servicios: true },
+        });
+        return res.status(200).json(barberoActualizado.servicios);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al actualizar servicios del barbero' });
+    }
+};
+
 // EXPORTACIÓN DE TODOS LOS MÉTODOS
 module.exports = {
     listarBarberos,
@@ -279,5 +330,7 @@ module.exports = {
     actualizarBarbero,
     eliminarBarbero,
     toggleAgenda,
-    actualizarHorarios
+    actualizarHorarios,
+    getServiciosBarbero,
+    setServiciosBarbero,
 };

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toggleAgenda, updateHorarios } from "../api";
 import SuperAdminDashboard from "../components/SuperAdmin/SuperAdminDashboard";
+import PanelServicios from "../components/Dashboard/PanelServicios";
 
 const hoy = new Date().toISOString().split("T")[0];
 
@@ -230,6 +231,8 @@ export default function Dashboard() {
                         {savingHorarios ? 'Guardando...' : 'Guardar Horarios'}
                     </button>
                 </div>
+
+                <PanelServicios barbero={barbero} />
 
                 <div className="bg-white rounded-2xl border border-[#e8e2d8]">
                     <div className="flex items-center justify-between px-6 py-5 border-b border-[#f0ece4]">

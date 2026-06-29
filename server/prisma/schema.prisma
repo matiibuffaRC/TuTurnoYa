@@ -43,36 +43,35 @@ model Sucursal {
 }
 
 model Barbero {
-  id             Int      @id @default(autoincrement())
+  id             Int        @id @default(autoincrement())
   nombre         String
   apellido       String
   telefono       String
-  email          String   @unique
-  activo         Boolean  @default(true)
-  agendaAbierta  Boolean  @default(true)
-  horarioEntrada String   @default("09:00")
-  horarioSalida  String   @default("18:00")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  email          String     @unique
+  activo         Boolean    @default(true)
+  agendaAbierta  Boolean    @default(true)
+  horarioEntrada String     @default("09:00")
+  horarioSalida  String     @default("18:00")
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
-  // Relación 1:N con Sucursal
   sucursalId     Int
-  sucursal       Sucursal @relation(fields: [sucursalId], references: [id], onDelete: Cascade)
+  sucursal       Sucursal   @relation(fields: [sucursalId], references: [id], onDelete: Cascade)
 
-  // Relación 1:1 con Usuario (Cada barbero operativo TIENE que tener una cuenta de acceso)
-  usuarioId      Int      @unique
-  usuario        Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId      Int        @unique
+  usuario        Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
-  // Relación con Turnos
   turnos         Turno[]
+  servicios      Servicio[]
 }
 
 model Servicio {
-  id       Int     @id @default(autoincrement())
+  id       Int       @id @default(autoincrement())
   tipo     String
   precio   Float
   duracion Int
   turnos   Turno[]
+  barberos Barbero[]
 }
 
 model Turno {
