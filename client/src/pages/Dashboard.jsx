@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { toggleAgenda, updateBarbero } from "../api";
+import { toggleAgenda, updateHorarios } from "../api";
 import SuperAdminDashboard from "../components/SuperAdmin/SuperAdminDashboard";
 
 const hoy = new Date().toISOString().split("T")[0];
@@ -93,9 +93,13 @@ export default function Dashboard() {
     };
 
     const handleUpdateHorarios = async () => {
+        if (horarioEntrada >= horarioSalida) {
+            alert('La hora de entrada debe ser anterior a la hora de salida');
+            return;
+        }
         setSavingHorarios(true);
         try {
-            const updated = await updateBarbero(barbero.id, { horarioEntrada, horarioSalida }, token);
+            const updated = await updateHorarios(barbero.id, { horarioEntrada, horarioSalida }, token);
             if (!updated.error) {
                 actualizarBarbero({ 
                     ...barbero, 

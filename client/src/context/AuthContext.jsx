@@ -13,10 +13,17 @@ export function AuthProvider({ children }) {
     })
     const [token, setToken] = useState(() => localStorage.getItem('token') || null)
 
-    const login = (tokenData, barberoData, usuarioData) => {
-        // Limpiar sesión anterior antes de setear la nueva
+    const limpiarStorage = () => {
+        localStorage.removeItem('token')
         localStorage.removeItem('barbero')
         localStorage.removeItem('usuario')
+        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('barbero')
+        sessionStorage.removeItem('usuario')
+    }
+
+    const login = (tokenData, barberoData, usuarioData) => {
+        limpiarStorage()
         setBarbero(null)
         setUsuario(null)
 
@@ -34,9 +41,7 @@ export function AuthProvider({ children }) {
     }
 
     const logout = () => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('barbero')
-        localStorage.removeItem('usuario')
+        limpiarStorage()
         setToken(null)
         setBarbero(null)
         setUsuario(null)

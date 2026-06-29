@@ -26,13 +26,15 @@ const AdminsPanel = () => {
                 body: JSON.stringify(credentials),
             })
             const data = await res.json()
-            if (!res.ok) { setError(data.error || 'Credenciales inválidas'); setIsLoading(false); return }
-            
-            // data.barbero exists for barberos, data.usuario exists for SUPER_ADMIN
+            if (!res.ok) {
+                setError(data.error || 'Credenciales inválidas')
+                return
+            }
             login(data.token, data.barbero, data.usuario)
             navigate('/dashboard')
         } catch {
             setError('No se pudo conectar con el servidor')
+        } finally {
             setIsLoading(false)
         }
     }

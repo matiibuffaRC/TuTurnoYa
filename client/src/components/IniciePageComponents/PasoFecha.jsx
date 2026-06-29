@@ -17,7 +17,8 @@ function esDiaLaborable(iso) {
 
 export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, onSiguiente }) {
     const hoy = hoyArgentina()
-    const ahoraMin = new Date().getHours() * 60 + new Date().getMinutes()
+    const ahoraArgentina = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Argentina/Buenos_Aires', hour: '2-digit', minute: '2-digit' })
+    const ahoraMin = Number(ahoraArgentina.split(':')[0]) * 60 + Number(ahoraArgentina.split(':')[1])
 
     const [errorDia, setErrorDia] = useState('')
 
@@ -28,7 +29,7 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
     function handleFecha(iso) {
         if (!iso) return
         if (!esDiaLaborable(iso)) {
-            setErrorDia('Solo podés reservar de lunes a sábado.')
+            setErrorDia('Solo podés reservar de martes a sábado.')
             onFecha('')
             onHora('')
             return

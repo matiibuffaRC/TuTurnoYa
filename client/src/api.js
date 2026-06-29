@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:3001'
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 // --- SUCURSALES ---
 export const getSucursales = () => fetch(`${BASE}/sucursales`).then(r => r.json())
@@ -37,6 +37,11 @@ export const deleteBarbero = (barberoId, token) => fetch(`${BASE}/barberos/${bar
 export const toggleAgenda = (barberoId, token) => fetch(`${BASE}/barberos/${barberoId}/agenda`, {
     method: 'PATCH',
     headers: { Authorization: `Bearer ${token}` },
+}).then(r => r.json())
+export const updateHorarios = (barberoId, data, token) => fetch(`${BASE}/barberos/${barberoId}/horarios`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
 }).then(r => r.json())
 
 // --- SERVICIOS & TURNOS ---
