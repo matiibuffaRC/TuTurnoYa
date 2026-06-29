@@ -39,6 +39,8 @@ export default function ReservarTurno() {
         getSucursales().then(setSucursales)
     }, []);
     
+
+    // Actualizamos el campo seleccionado con el valor ingresado, si es "" es para vaciar el valor
     const actualizarCampo = (field, value) => {
         setForm((formAnterior) => ({
             ...formAnterior,
@@ -46,10 +48,13 @@ export default function ReservarTurno() {
         }))
     }
 
+    // Seleccionamos una sucursal
     const handleSucursal = async (id) => {
         actualizarCampo('sucursalId', id)
+        //  Limpiamos la selección de barberos
         actualizarCampo('barberoId', '')
-        setBarberos(await getBarberos(id))
+        // Hacemos la petición para obtener a todos los baberos de dicha sucursal
+        setBarberos(await getBarberos(id)) // La id que tenemos que usar es el de LA SUCURSAL SELECCIONADA
     }
 
     const handleBarbero = async (id) => {
@@ -58,14 +63,19 @@ export default function ReservarTurno() {
         actualizarCampo('hora', '')
         actualizarCampo('fecha', '')
         setHorarios([])
+        // Hacemos la petición para obtener los servicios de cada barbero
         const serviciosBarbero = await getServiciosBarbero(id)
         setServicios(serviciosBarbero || [])
     }
 
     const handleFecha = async (fecha) => {
         actualizarCampo('fecha', fecha)
+        // El formato de la fecha es AÑO/MES/DIA 
+        console.log(fecha)
+        // Una vez que se cambia la fecha que se elija, se "reinicia la hora preelegida"
         actualizarCampo('hora', '')
 
+        // Validamos que se haya elegido un barbero y un servicio
         if (form.barberoId && form.servicioId) {
             setHorarios(await getDisponibles(form.barberoId, fecha, form.servicioId))
         }
