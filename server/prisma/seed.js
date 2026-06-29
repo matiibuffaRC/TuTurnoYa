@@ -54,16 +54,16 @@ async function main() {
   });
   console.log('Servicios creados.');
 
-  // 4. Crear un Usuario Administrador
+  // 4. Crear un Usuario Super Administrador (no vinculado a ningún barbero)
   const admin = await prisma.usuario.create({
     data: {
       nombre: 'Admin General',
       email: 'admin@tuturnoya.com',
       password: adminPasswordHash,
-      rol: 'ADMIN',
+      rol: 'SUPER_ADMIN',
     },
   });
-  console.log(`Usuario administrador creado: ${admin.email}`);
+  console.log(`Usuario super administrador creado: ${admin.email}`);
 
   // 5. Crear Barberos con sus Usuarios asociados de forma anidada
   const barberosData = [

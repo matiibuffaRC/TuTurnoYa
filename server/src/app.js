@@ -9,19 +9,20 @@ const serviciosRoutes = require('./routes/servicios')
 const turnosRoutes = require('./routes/turnos')
 const clientesRoutes = require('./routes/clientes')
 
-// Crear aplicación
+// Creamos la aplicación
 const app = express()
 
-// Middlewares
+// Definimos los middlewares globales
 app.use(cors())
 app.use(express.json())
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Servidor funcionando correctamente' })
+    res.json({ status: 'OK', message: 'Servidor funcionando correctamente' })
 })
 
-// Rutas
+// Básicamente lo que hacemos es decir que las peticiones realizadas a tal URL se manejarán (o derivarán) a las siguientes rutas
+// Ejemplo todas las peticiones a "/auth" van a ser manejadas por authRoutes
 app.use('/auth', authRoutes)
 app.use('/sucursales', sucursalesRoutes)
 app.use('/barberos', barberosRoutes)
@@ -31,13 +32,13 @@ app.use('/clientes', clientesRoutes)
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
-  res.status(404).json({ error: 'Ruta no encontrada' })
+    res.status(404).json({ error: 'Ruta no encontrada' })
 })
 
 // Manejo de errores global
 app.use((err, req, res, next) => {
-  console.error(err)
-  res.status(500).json({ error: 'Error interno del servidor' })
+    console.error(err)
+    res.status(500).json({ error: 'Error interno del servidor' })
 })
 
 module.exports = app

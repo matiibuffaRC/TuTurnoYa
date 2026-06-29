@@ -4,8 +4,21 @@ const prisma = require('../config/database');
 // GET /barberos - Listar todos los barberos
 const listarBarberos = async (req, res) => {
     try {
+        const { sucursalId, activo } = req.query;
+        const where = {};
+
+        if (sucursalId) {
+            where.sucursalId = Number(sucursalId);
+        }
+        if (activo !== undefined) {
+            where.activo = activo === 'true';
+        } else {
+            where.activo = true; // Por defecto, mostrar solo activos
+        }
+
         const barberos = await prisma.barbero.findMany({
-            include: { sucursal: true }
+            where,
+            include: { sucursal: true },
         });
         return res.status(200).json(barberos);
     } catch (error) {
@@ -20,7 +33,7 @@ const obtenerBarbero = async (req, res) => {
         const { id } = req.params;
         const barbero = await prisma.barbero.findUnique({
             where: { id: Number(id) },
-            include: { sucursal: true, usuario: true }
+            include: { sucursal: true, usuario: true, turnos: true }
         });
         if (!barbero) {
             return res.status(404).json({ error: 'Barbero no encontrado' });
@@ -209,7 +222,7 @@ const toggleAgenda = async (req, res) => {
     }
 };
 
-// PATCH /barberos/:id/horarios - Actualizar horarios habilitados
+// PATCH /barberos/:id/horarios - Actualizar horarios de entrada/salida
 const actualizarHorarios = async (req, res) => {
     try {
         const { id } = req.params;
