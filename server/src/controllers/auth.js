@@ -12,16 +12,18 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Email y contraseña son obligatorios' })
     }
 
+    // Buscar el barbero por su email, cargando la sucursal y la cuenta de usuario asociada
     const barbero = await prisma.barbero.findUnique({
       where: { email },
-      include: { sucursal: true },
+      include: { sucursal: true, usuario: true },
     })
 
-    if (!barbero || !barbero.activo) {
+    if (!barbero || !barbero.activo || !barbero.usuario) {
       return res.status(401).json({ error: 'Credenciales inválidas' })
     }
 
-    const passwordValida = await bcrypt.compare(password, barbero.password)
+    // Verificar la contraseña contra el hash almacenado en el modelo Usuario
+    const passwordValida = await bcrypt.compare(password, barbero.usuario.password)
     if (!passwordValida) {
       return res.status(401).json({ error: 'Credenciales inválidas' })
     }
@@ -32,10 +34,12 @@ const login = async (req, res) => {
       { expiresIn: '8h' }
     )
 
-    const { password: _, ...barberoSinPassword } = barbero
+    // Eliminar datos sensibles antes de retornar la respuesta al frontend
+    delete barbero.usuario.password
 
-    res.json({ token, barbero: barberoSinPassword })
+    res.json({ token, barbero })
   } catch (error) {
+    console.error(error)
     res.status(500).json({ error: 'Error al iniciar sesión' })
   }
 }

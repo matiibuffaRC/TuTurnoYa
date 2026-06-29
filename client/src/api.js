@@ -16,3 +16,9 @@ export const toggleAgenda = (barberoId, token) =>
     method: 'PATCH',
     headers: { Authorization: `Bearer ${token}` },
   }).then(r => r.json())
+export const updateBarbero = (barberoId, data, token) =>
+  fetch(`${BASE}/barberos/${barberoId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data)
+  }).then(r => r.json())

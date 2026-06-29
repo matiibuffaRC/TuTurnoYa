@@ -1,253 +1,270 @@
-const prisma = require('../config/database')
+const bcrypt = require('bcryptjs');
+const prisma = require('../config/database');
 
-// Listar barberos
+// GET /barberos - Listar todos los barberos
 const listarBarberos = async (req, res) => {
-  try {
-    const { sucursalId, activo } = req.query
-    const where = {}
-
-    if (sucursalId) {
-      where.sucursalId = Number(sucursalId)
+    try {
+        const barberos = await prisma.barbero.findMany({
+            include: { sucursal: true }
+        });
+        return res.status(200).json(barberos);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al listar los barberos' });
     }
-    if (activo !== undefined) {
-      where.activo = activo === 'true'
-    } else {
-      where.activo = true // Por defecto, mostrar solo activos
-    }
+};
 
-    const barberos = await prisma.barbero.findMany({
-      where,
-      include: {
-        sucursal: true,
-      },
-    })
-    res.json(barberos)
-  } catch (error) {
-    res.status(500).json({ error: 'Error al listar barberos' })
-  }
-}
-
-// Obtener barbero por ID
+// GET /barberos/:id - Obtener un barbero por su ID
 const obtenerBarbero = async (req, res) => {
-  try {
-    const { id } = req.params
-    const barbero = await prisma.barbero.findUnique({
-      where: { id: Number(id) },
-      include: {
-        sucursal: true,
-        turnos: true,
-      },
-    })
-    if (!barbero) {
-      return res.status(404).json({ error: 'Barbero no encontrado' })
+    try {
+        const { id } = req.params;
+        const barbero = await prisma.barbero.findUnique({
+            where: { id: Number(id) },
+            include: { sucursal: true, usuario: true }
+        });
+        if (!barbero) {
+            return res.status(404).json({ error: 'Barbero no encontrado' });
+        }
+        return res.status(200).json(barbero);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al obtener el barbero' });
     }
-    res.json(barbero)
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener barbero' })
-  }
-}
+};
 
-// Crear barbero
+// POST /barberos - Crear barbero y su cuenta de Usuario de forma simultánea
 const crearBarbero = async (req, res) => {
-  try {
-    const { nombre, apellido, telefono, sucursalId, horaInicio, horaFin } = req.body
+    try {
+        const { nombre, apellido, telefono, email, password, sucursalId, horarioEntrada, horarioSalida } = req.body;
 
-    // Verificar que la sucursal existe
-    const sucursal = await prisma.sucursal.findUnique({
-      where: { id: Number(sucursalId) },
-    })
-    if (!sucursal) {
-      return res.status(404).json({ error: 'Sucursal no encontrada' })
+        // 1. Verificar que la sucursal existe
+        const sucursal = await prisma.sucursal.findUnique({
+            where: { id: Number(sucursalId) },
+        });
+        if (!sucursal) {
+            return res.status(404).json({ error: 'Sucursal no encontrada' });
+        }
+
+        // 2. Verificar que el email no esté duplicado en Usuarios
+        const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
+        if (usuarioExistente) {
+            return res.status(400).json({ error: 'El email ya se encuentra registrado' });
+        }
+
+        // Encriptar contraseña (usa una por defecto si no viene en el body)
+        const hash = bcrypt.hashSync(password || 'barbero123', 10);
+
+        // 3. Creación conjunta (Transacción Atómica usando relaciones anidadas de Prisma)
+        const nuevoBarbero = await prisma.barbero.create({
+            data: {
+                nombre,
+                apellido,
+                telefono,
+                email,
+                activo: true,
+                horarioEntrada: horarioEntrada || '09:00',
+                horarioSalida: horarioSalida || '18:00',
+                sucursal: {
+                    connect: { id: Number(sucursalId) }
+                },
+                usuario: {
+                    create: {
+                        nombre: `${nombre} ${apellido}`,
+                        email,
+                        password: hash,
+                        rol: 'BARBERO'
+                    }
+                }
+            },
+            include: {
+                sucursal: true,
+                usuario: true 
+            },
+        });
+
+        return res.status(201).json(nuevoBarbero);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al crear barbero y su cuenta de usuario' });
     }
+};
 
-    const hInicio = horaInicio || '09:00'
-    const hFin = horaFin || '18:00'
-
-    // Validar que horaInicio < horaFin
-    if (hInicio >= hFin) {
-      return res.status(400).json({ error: 'La hora de inicio debe ser anterior a la hora de fin' })
-    }
-
-    // Validar que horaFin no sea posterior al cierre de la peluquería
-    if (hFin > sucursal.horarioCierre) {
-      return res.status(400).json({ 
-        error: `El horario de fin no puede ser posterior al cierre de la peluquería (${sucursal.horarioCierre})` 
-      })
-    }
-
-    const barbero = await prisma.barbero.create({
-      data: {
-        nombre,
-        apellido,
-        telefono,
-        sucursalId: Number(sucursalId),
-        activo: true,
-        horaInicio: hInicio,
-        horaFin: hFin,
-      },
-      include: {
-        sucursal: true,
-      },
-    })
-    res.status(201).json(barbero)
-  } catch (error) {
-    res.status(500).json({ error: 'Error al crear barbero' })
-  }
-}
-
-// Actualizar barbero
+// PUT /barberos/:id - Actualizar datos del barbero
 const actualizarBarbero = async (req, res) => {
-  try {
-    const { id } = req.params
-    const { nombre, apellido, telefono, sucursalId, activo, horaInicio, horaFin } = req.body
+    try {
+        const { id } = req.params;
+        const { nombre, apellido, telefono, sucursalId, activo, horarioEntrada, horarioSalida } = req.body;
 
-    const barbero = await prisma.barbero.findUnique({
-      where: { id: Number(id) },
-      include: { sucursal: true }
-    })
-    if (!barbero) {
-      return res.status(404).json({ error: 'Barbero no encontrado' })
+        const barbero = await prisma.barbero.findUnique({
+            where: { id: Number(id) },
+            include: { sucursal: true }
+        });
+        if (!barbero) {
+            return res.status(404).json({ error: 'Barbero no encontrado' });
+        }
+
+        let sucursal = barbero.sucursal;
+
+        if (sucursalId) {
+            sucursal = await prisma.sucursal.findUnique({
+                where: { id: Number(sucursalId) },
+            });
+            if (!sucursal) {
+                return res.status(404).json({ error: 'Sucursal no encontrada' });
+            }
+        }
+
+        const newHorarioEntrada = horarioEntrada || barbero.horarioEntrada;
+        const newHorarioSalida = horarioSalida || barbero.horarioSalida;
+
+        if (newHorarioEntrada >= newHorarioSalida) {
+            return res.status(400).json({ error: 'El horario de entrada debe ser anterior al horario de salida' });
+        }
+
+        // Validar que no se extienda más allá del horario de la sucursal
+        if (newHorarioSalida > sucursal.horarioCierre) {
+            return res.status(400).json({
+                error: `El horario de salida no puede ser posterior al cierre de la sucursal (${sucursal.horarioCierre})`
+            });
+        }
+        if (newHorarioEntrada < sucursal.horarioApertura) {
+            return res.status(400).json({
+                error: `El horario de entrada no puede ser anterior a la apertura de la sucursal (${sucursal.horarioApertura})`
+            });
+        }
+
+        // Actualizamos el barbero. Si cambia nombre/apellido, también actualizamos el nombre en su Usuario asociado.
+        const barberoActualizado = await prisma.barbero.update({
+            where: { id: Number(id) },
+            data: {
+                nombre: nombre || barbero.nombre,
+                apellido: apellido || barbero.apellido,
+                telefono: telefono || barbero.telefono,
+                sucursalId: sucursalId ? Number(sucursalId) : barbero.sucursalId,
+                activo: activo !== undefined ? activo : barbero.activo,
+                horarioEntrada: newHorarioEntrada,
+                horarioSalida: newHorarioSalida,
+                usuario: {
+                    update: {
+                        nombre: `${nombre || barbero.nombre} ${apellido || barbero.apellido}`
+                    }
+                }
+            },
+            include: {
+                sucursal: true,
+                usuario: true
+            },
+        });
+        return res.status(200).json(barberoActualizado);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al actualizar barbero' });
     }
+};
 
-    let sucursal = barbero.sucursal
-
-    // Si cambia sucursalId, verificar que existe
-    if (sucursalId) {
-      sucursal = await prisma.sucursal.findUnique({
-        where: { id: Number(sucursalId) },
-      })
-      if (!sucursal) {
-        return res.status(404).json({ error: 'Sucursal no encontrada' })
-      }
-    }
-
-    const newHoraInicio = horaInicio || barbero.horaInicio
-    const newHoraFin = horaFin || barbero.horaFin
-
-    // Validar que horaInicio < horaFin
-    if (newHoraInicio >= newHoraFin) {
-      return res.status(400).json({ error: 'La hora de inicio debe ser anterior a la hora de fin' })
-    }
-
-    // Validar que horaFin no sea posterior al cierre de la peluquería
-    if (newHoraFin > sucursal.horarioCierre) {
-      return res.status(400).json({ 
-        error: `El horario de fin no puede ser posterior al cierre de la peluquería (${sucursal.horarioCierre})` 
-      })
-    }
-
-    const barberoActualizado = await prisma.barbero.update({
-      where: { id: Number(id) },
-      data: {
-        nombre: nombre || barbero.nombre,
-        apellido: apellido || barbero.apellido,
-        telefono: telefono || barbero.telefono,
-        sucursalId: sucursalId ? Number(sucursalId) : barbero.sucursalId,
-        activo: activo !== undefined ? activo : barbero.activo,
-        horaInicio: newHoraInicio,
-        horaFin: newHoraFin,
-      },
-      include: {
-        sucursal: true,
-      },
-    })
-    res.json(barberoActualizado)
-  } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar barbero' })
-  }
-}
-
-// Eliminar barbero (soft delete - marcar como inactivo)
+// DELETE /barberos/:id - Eliminar al barbero seleccionado (soft delete)
 const eliminarBarbero = async (req, res) => {
-  try {
-    const { id } = req.params
-    const barbero = await prisma.barbero.findUnique({
-      where: { id: Number(id) },
-    })
-    if (!barbero) {
-      return res.status(404).json({ error: 'Barbero no encontrado' })
+    try {
+        const { id } = req.params;
+        const barbero = await prisma.barbero.findUnique({
+            where: { id: Number(id) },
+        });
+        if (!barbero) {
+            return res.status(404).json({ error: 'Barbero no encontrado' });
+        }
+
+        const barberoActualizado = await prisma.barbero.update({
+            where: { id: Number(id) },
+            data: { activo: false },
+            include: { sucursal: true }
+        });
+        return res.status(200).json({ mensaje: 'Barbero desactivado correctamente', barbero: barberoActualizado });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al eliminar barbero' });
     }
+};
 
-    const barberoActualizado = await prisma.barbero.update({
-      where: { id: Number(id) },
-      data: { activo: false },
-    })
-    res.json({ mensaje: 'Barbero eliminado correctamente', barbero: barberoActualizado })
-  } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar barbero' })
-  }
-}
-
-// Toggle agenda abierta/cerrada
+// PATCH /barberos/:id/agenda - Abrir/cerrar agenda
 const toggleAgenda = async (req, res) => {
-  try {
-    const { id } = req.params
-    const barbero = await prisma.barbero.findUnique({ where: { id: Number(id) } })
-    if (!barbero) return res.status(404).json({ error: 'Barbero no encontrado' })
+    try {
+        const { id } = req.params;
+        const barbero = await prisma.barbero.findUnique({
+            where: { id: Number(id) }
+        });
+        if (!barbero) {
+            return res.status(404).json({ error: 'Barbero no encontrado' });
+        }
 
-    const barberoActualizado = await prisma.barbero.update({
-      where: { id: Number(id) },
-      data: { agendaAbierta: !barbero.agendaAbierta },
-      include: { sucursal: true },
-    })
-    const { password: _, ...sinPassword } = barberoActualizado
-    res.json(sinPassword)
-  } catch {
-    res.status(500).json({ error: 'Error al cambiar estado de la agenda' })
-  }
-}
+        const barberoActualizado = await prisma.barbero.update({
+            where: { id: Number(id) },
+            data: { agendaAbierta: !barbero.agendaAbierta },
+            include: { sucursal: true }
+        });
+        return res.status(200).json(barberoActualizado);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al cambiar estado de agenda' });
+    }
+};
 
-// Actualizar solo los horarios del barbero
+// PATCH /barberos/:id/horarios - Actualizar horarios habilitados
 const actualizarHorarios = async (req, res) => {
-  try {
-    const { id } = req.params
-    const { horaInicio, horaFin } = req.body
+    try {
+        const { id } = req.params;
+        const { horarioEntrada, horarioSalida } = req.body;
 
-    if (!horaInicio || !horaFin) {
-      return res.status(400).json({ error: 'horaInicio y horaFin son obligatorios' })
+        if (!horarioEntrada || !horarioSalida) {
+            return res.status(400).json({ error: 'horarioEntrada y horarioSalida son obligatorios' });
+        }
+
+        if (horarioEntrada >= horarioSalida) {
+            return res.status(400).json({ error: 'El horario de entrada debe ser anterior al horario de salida' });
+        }
+
+        const barbero = await prisma.barbero.findUnique({
+            where: { id: Number(id) },
+            include: { sucursal: true }
+        });
+        if (!barbero) {
+            return res.status(404).json({ error: 'Barbero no encontrado' });
+        }
+
+        if (horarioSalida > barbero.sucursal.horarioCierre) {
+            return res.status(400).json({
+                error: `El horario de salida no puede ser posterior al cierre de la sucursal (${barbero.sucursal.horarioCierre})`
+            });
+        }
+
+        if (horarioEntrada < barbero.sucursal.horarioApertura) {
+            return res.status(400).json({
+                error: `El horario de entrada no puede ser anterior a la apertura de la sucursal (${barbero.sucursal.horarioApertura})`
+            });
+        }
+
+        const barberoActualizado = await prisma.barbero.update({
+            where: { id: Number(id) },
+            data: {
+                horarioEntrada,
+                horarioSalida,
+            },
+            include: { sucursal: true },
+        });
+        return res.status(200).json(barberoActualizado);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al actualizar horarios' });
     }
+};
 
-    // Validar que horaInicio < horaFin
-    if (horaInicio >= horaFin) {
-      return res.status(400).json({ error: 'La hora de inicio debe ser anterior a la hora de fin' })
-    }
-
-    const barbero = await prisma.barbero.findUnique({ 
-      where: { id: Number(id) },
-      include: { sucursal: true }
-    })
-    if (!barbero) {
-      return res.status(404).json({ error: 'Barbero no encontrado' })
-    }
-
-    // Validar que horaFin no sea posterior al cierre de la peluquería
-    if (horaFin > barbero.sucursal.horarioCierre) {
-      return res.status(400).json({ 
-        error: `El horario de fin no puede ser posterior al cierre de la peluquería (${barbero.sucursal.horarioCierre})` 
-      })
-    }
-
-    const barberoActualizado = await prisma.barbero.update({
-      where: { id: Number(id) },
-      data: {
-        horaInicio,
-        horaFin,
-      },
-      include: { sucursal: true },
-    })
-    const { password: _, ...sinPassword } = barberoActualizado
-    res.json(sinPassword)
-  } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar horarios' })
-  }
-}
-
+// EXPORTACIÓN DE TODOS LOS MÉTODOS
 module.exports = {
-  listarBarberos,
-  obtenerBarbero,
-  crearBarbero,
-  actualizarBarbero,
-  eliminarBarbero,
-  toggleAgenda,
-  actualizarHorarios,
-}
+    listarBarberos,
+    obtenerBarbero,
+    crearBarbero,
+    actualizarBarbero,
+    eliminarBarbero,
+    toggleAgenda,
+    actualizarHorarios
+};

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { toggleAgenda } from '../api'
+import { toggleAgenda, updateBarbero } from '../api'
 
 const hoy = new Date().toISOString().split('T')[0]
 
@@ -30,6 +30,9 @@ export default function Dashboard() {
   const [fecha, setFecha] = useState(hoy)
   const [loading, setLoading] = useState(false)
   const [toggling, setToggling] = useState(false)
+  const [horarioEntrada, setHorarioEntrada] = useState('09:00')
+  const [horarioSalida, setHorarioSalida] = useState('20:00')
+  const [savingHorarios, setSavingHorarios] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -37,6 +40,8 @@ export default function Dashboard() {
     if (!token || !data) { navigate('/admins-panel'); return }
     const b = JSON.parse(data)
     setBarbero(b)
+    setHorarioEntrada(b.horarioEntrada || '09:00')
+    setHorarioSalida(b.horarioSalida || '20:00')
     fetchTurnos(b.id, hoy, token)
   }, [navigate])
 
@@ -70,6 +75,21 @@ export default function Dashboard() {
       localStorage.setItem('barbero', JSON.stringify(newBarbero))
     }
     setToggling(false)
+  }
+
+  const handleUpdateHorarios = async () => {
+    setSavingHorarios(true)
+    const token = localStorage.getItem('token')
+    const updated = await updateBarbero(barbero.id, { horarioEntrada, horarioSalida }, token)
+    if (!updated.error) {
+      const newBarbero = { ...barbero, horarioEntrada: updated.horarioEntrada, horarioSalida: updated.horarioSalida }
+      setBarbero(newBarbero)
+      localStorage.setItem('barbero', JSON.stringify(newBarbero))
+      alert('Horarios guardados correctamente')
+    } else {
+      alert('Error al actualizar horarios')
+    }
+    setSavingHorarios(false)
   }
 
   const cerrarSesion = () => {
@@ -144,6 +164,36 @@ export default function Dashboard() {
             }`}
           >
             {toggling ? '...' : agendaAbierta ? 'Cerrar agenda' : 'Abrir agenda'}
+          </button>
+        </div>
+
+        <div className="bg-white rounded-xl border border-[#e8e2d8] px-5 py-4 mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="flex gap-4">
+            <div>
+              <label className="block text-xs font-bold text-[#8a8070] uppercase mb-1 tracking-widest">Hora Entrada</label>
+              <input 
+                type="time" 
+                value={horarioEntrada} 
+                onChange={(e) => setHorarioEntrada(e.target.value)} 
+                className="border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-sm font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535]"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#8a8070] uppercase mb-1 tracking-widest">Hora Salida</label>
+              <input 
+                type="time" 
+                value={horarioSalida} 
+                onChange={(e) => setHorarioSalida(e.target.value)} 
+                className="border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-sm font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535]"
+              />
+            </div>
+          </div>
+          <button
+            onClick={handleUpdateHorarios}
+            disabled={savingHorarios}
+            className="bg-[#1e2535] text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-[#2d3748] transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+          >
+            {savingHorarios ? 'Guardando...' : 'Guardar Horarios'}
           </button>
         </div>
 
