@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getSucursales } from '../services/sucursal.service'
-import { getBarberos } from '../services/barbero.service'
-import { getServicios } from '../services/servicio.service'
+import { getBarberos, getServiciosBarbero } from '../services/barbero.service'
 import { getDisponibles, crearTurno } from '../services/turno.service'
 
 
@@ -30,23 +29,14 @@ export default function ReservarTurno() {
     const [barberos, setBarberos] = useState([])
     const [servicios, setServicios] = useState([])
     const [horarios, setHorarios] = useState([])
+
     const [form, setForm] = useState(FORM_INICIAL)
     const [turnoConfirmado, setTurnoConfirmado] = useState(null)
     const [error, setError] = useState('')
 
     // Una vez que montamos la vista hacemos una petición al servidor para obtener las sucursales
     useEffect(() => {
-        const cargarDatos = async () => {
-            const [sucursales, servicios] = await Promise.all([
-                getSucursales(),
-                getServicios(),
-            ]);
-
-            setSucursales(sucursales);
-            setServicios(servicios);
-        };
-        // Llamá la función sino nunca la ejecutamos xd
-        cargarDatos();
+        getSucursales().then(setSucursales)
     }, []);
     
     const actualizarCampo = (field, value) => {
@@ -62,11 +52,14 @@ export default function ReservarTurno() {
         setBarberos(await getBarberos(id))
     }
 
-    const handleBarbero = (id) => {
+    const handleBarbero = async (id) => {
         actualizarCampo('barberoId', id)
+        actualizarCampo('servicioId', '')
         actualizarCampo('hora', '')
         actualizarCampo('fecha', '')
         setHorarios([])
+        const serviciosBarbero = await getServiciosBarbero(id)
+        setServicios(serviciosBarbero || [])
     }
 
     const handleFecha = async (fecha) => {

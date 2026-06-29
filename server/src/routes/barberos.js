@@ -2,12 +2,22 @@ const express = require('express')
 const { body } = require('express-validator')
 const router = express.Router()
 const { handleValidationErrors } = require('../middlewares/validators')
-const barberosController = require('../controllers/barberos')
 const { verificarToken } = require('../middlewares/authMiddleware')
+const { autorizar } = require('../middlewares/autorizar')
+const {
+    listarBarberos,
+    obtenerBarbero,
+    crearBarbero,
+    actualizarBarbero,
+    eliminarBarbero,
+    toggleAgenda,
+    actualizarHorarios,
+    getServiciosBarbero,
+    setServiciosBarbero,
+} = require('../controllers/barberos')
 
-// Validamos que nos estén vacíos dichos campos
 const validarBarbero = [
-    body('nombre').trim().notEmpty().withMessage    ('El nombre es obligatorio'),
+    body('nombre').trim().notEmpty().withMessage('El nombre es obligatorio'),
     body('apellido').trim().notEmpty().withMessage('El apellido es obligatorio'),
     body('telefono').trim().notEmpty().withMessage('El teléfono es obligatorio'),
     body('sucursalId')
@@ -15,40 +25,40 @@ const validarBarbero = [
         .withMessage('El sucursalId debe ser un número válido'),
 ]
 
-// GET /barberos - Mostramos a los barberos
-router.get('/', barberosController.listarBarberos)
+// Públicas
+router.get('/', listarBarberos)
+router.get('/:id', obtenerBarbero)
 
-// GET /barberos/:id - Ubicamos a algún barbero por su ID
-router.get('/:id', barberosController.obtenerBarbero)
+// Solo SUPER_ADMIN
+router.post('/', verificarToken, autorizar('SUPER_ADMIN'), validarBarbero, handleValidationErrors, crearBarbero)
 
-// POST /barberos - Creamos un barbero
-router.post('/', validarBarbero, handleValidationErrors, barberosController.crearBarbero)
-
-// PUT /barberos/:id - Actualizar
 router.put(
     '/:id',
+    verificarToken,
+    autorizar('SUPER_ADMIN'),
     [
         body('nombre').optional().trim().notEmpty().withMessage('El nombre no puede estar vacío'),
         body('apellido').optional().trim().notEmpty().withMessage('El apellido no puede estar vacío'),
         body('telefono').optional().trim().notEmpty().withMessage('El teléfono no puede estar vacío'),
         body('sucursalId')
-        .optional()
-        .isInt({ min: 1 })
-        .withMessage('El sucursalId debe ser un número válido'),
+            .optional()
+            .isInt({ min: 1 })
+            .withMessage('El sucursalId debe ser un número válido'),
         body('activo').optional().isBoolean().withMessage('El estado debe ser booleano'),
     ],
     handleValidationErrors,
-    barberosController.actualizarBarbero
+    actualizarBarbero
 )
 
-// DELETE /barberos/:id - Eliminamos al babero seleccionado
-router.delete('/:id', barberosController.eliminarBarbero)
+router.delete('/:id', verificarToken, autorizar('SUPER_ADMIN'), eliminarBarbero)
 
+// BARBERO autenticado (su propia agenda/horarios/servicios)
+router.patch('/:id/agenda', verificarToken, toggleAgenda)
+router.patch('/:id/horarios', verificarToken, actualizarHorarios)
 
-// PATCH /barberos/:id/agenda - Abrir/cerrar agenda --- Para esto tenemos que validar (Terminar JWT)
-router.patch('/:id/agenda', verificarToken, barberosController.toggleAgenda)
-
-// PATCH /barberos/:id/horarios - Actualizar horarios habilitados --- Para esto tenemos que validar (Terminar JWT) x2
-router.patch('/:id/horarios', verificarToken, barberosController.actualizarHorarios)
+// Pública — el cliente la usa para saber qué servicios ofrece el barbero al reservar
+router.get('/:id/servicios', getServiciosBarbero)
+// Protegida — el barbero actualiza sus servicios
+router.patch('/:id/servicios', verificarToken, setServiciosBarbero)
 
 module.exports = router

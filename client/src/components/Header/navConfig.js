@@ -7,3 +7,7 @@ export const LINKS_CLIENTE = [
 export const LINKS_PELUQUERO = [
     { to: '/dashboard', label: 'Mi agenda' },
 ]
+
+export const LINKS_ADMIN = [
+    { to: '/dashboard', label: 'Panel admin' },
+]

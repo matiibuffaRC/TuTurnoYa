@@ -1,10 +1,23 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  password  String
+  rol       String   @default("CLIENTE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relación 1:1 inversa con Barbero (opcional en el modelo Usuario, ya que no todos los usuarios son barberos)
+  barbero   Barbero?
 }
 
 model Cliente {
@@ -22,30 +35,43 @@ model Sucursal {
   telefono        String
   horarioApertura String
   horarioCierre   String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relación 1:N con Barberos
   barberos        Barbero[]
 }
 
 model Barbero {
-  id         Int      @id @default(autoincrement())
-  nombre     String
-  apellido   String
-  telefono   String
-  email      String   @unique
-  password   String
-  activo              Boolean  @default(true)
-  agendaAbierta       Boolean  @default(true)
-  horariosHabilitados String?
-  sucursalId Int
-  sucursal   Sucursal @relation(fields: [sucursalId], references: [id])
-  turnos     Turno[]
+  id             Int        @id @default(autoincrement())
+  nombre         String
+  apellido       String
+  telefono       String
+  email          String     @unique
+  activo         Boolean    @default(true)
+  agendaAbierta  Boolean    @default(true)
+  horarioEntrada String     @default("09:00")
+  horarioSalida  String     @default("18:00")
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  sucursalId     Int
+  sucursal       Sucursal   @relation(fields: [sucursalId], references: [id], onDelete: Cascade)
+
+  usuarioId      Int        @unique
+  usuario        Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  turnos         Turno[]
+  servicios      Servicio[]
 }
 
 model Servicio {
-  id       Int     @id @default(autoincrement())
+  id       Int       @id @default(autoincrement())
   tipo     String
   precio   Float
   duracion Int
   turnos   Turno[]
+  barberos Barbero[]
 }
 
 model Turno {

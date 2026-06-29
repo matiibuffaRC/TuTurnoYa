@@ -20,18 +20,22 @@ const AdminsPanel = () => {
         setError('')
         setIsLoading(true)
         try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credentials),
-        })
-        const data = await res.json()
-        if (!res.ok) { setError(data.error || 'Credenciales inválidas'); setIsLoading(false); return }
-        login(data.token, data.barbero)
-        navigate('/dashboard')
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(credentials),
+            })
+            const data = await res.json()
+            if (!res.ok) {
+                setError(data.error || 'Credenciales inválidas')
+                return
+            }
+            login(data.token, data.barbero, data.usuario)
+            navigate('/dashboard')
         } catch {
-        setError('No se pudo conectar con el servidor')
-        setIsLoading(false)
+            setError('No se pudo conectar con el servidor')
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -46,7 +50,7 @@ const AdminsPanel = () => {
 
                     <div className="relative z-10">
                         <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase text-amber-400 border border-amber-400/30 px-3 py-1.5 rounded-full">
-                            Portal barberos
+                            Portal Empleados
                         </span>
                     </div>
 
@@ -58,7 +62,7 @@ const AdminsPanel = () => {
                             </span>
                         </h3>
                         <p className="text-white/50 text-sm leading-relaxed max-w-sm">
-                            Gestioná tu agenda, mirá tus turnos del día y abrí o cerrá tus reservas cuando quieras.
+                            Gestioná tu agenda, mirá tus turnos del día y administrá el sistema.
                         </p>
 
                         <div className="space-y-2 pt-2">
@@ -83,12 +87,12 @@ const AdminsPanel = () => {
                 <div className="col-span-12 md:col-span-6 p-8 sm:p-12 md:p-14 flex flex-col justify-center">
                     <div className="block md:hidden text-center mb-8">
                         <h2 className="text-4xl font-black text-[#1e2535] tracking-tight">TuTurnoYa</h2>
-                        <p className="text-sm text-[#8a8070] mt-1 font-medium uppercase tracking-widest">Portal Peluqueros</p>
+                        <p className="text-sm text-[#8a8070] mt-1 font-medium uppercase tracking-widest">Portal Empleados</p>
                     </div>
 
                     <div className="hidden md:block mb-8">
                         <h2 className="text-4xl font-black text-[#1e2535] tracking-tight">Bienvenido</h2>
-                        <p className="text-sm text-[#8a8070] mt-2">Ingresá tus credenciales para acceder a tu agenda.</p>
+                        <p className="text-sm text-[#8a8070] mt-2">Ingresá tus credenciales para acceder a tu panel.</p>
                     </div>
 
                     {error && (

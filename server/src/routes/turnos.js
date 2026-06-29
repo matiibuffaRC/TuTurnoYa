@@ -2,9 +2,9 @@ const express = require('express')
 const { body, query } = require('express-validator')
 const router = express.Router()
 const { handleValidationErrors } = require('../middlewares/validators')
+const { verificarToken } = require('../middlewares/authMiddleware')
 const turnosController = require('../controllers/turnos')
 
-// Validaciones reutilizables
 const validarTurno = [
     body('fecha')
         .trim()
@@ -34,7 +34,7 @@ const validarTurno = [
         .withMessage('El servicioId debe ser un número válido'),
 ]
 
-// GET /turnos - Listar por email
+// Pública — el cliente consulta sus turnos por email
 router.get(
     '/',
     query('email')
@@ -47,7 +47,7 @@ router.get(
     turnosController.listarTurnos
 )
 
-// GET /turnos/disponibles - Listar disponibles
+// Pública — el cliente consulta disponibilidad
 router.get(
     '/disponibles',
     query('barberoId')
@@ -63,52 +63,59 @@ router.get(
     turnosController.listarTurnosDisponibles
 )
 
-// GET /turnos/barbero/:id - Turnos de un barbero por fecha (requiere token)
-const { verificarToken } = require('../middlewares/authMiddleware')
-router.get('/barbero/:id', verificarToken, turnosController.listarTurnosBarbero)
+// Protegida — el barbero solo ve su propia agenda; SUPER_ADMIN puede ver cualquiera
+router.get('/barbero/:id', verificarToken, (req, res, next) => {
+    const esAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(req.usuario.rol)
+    const esPropioId = req.usuario.id === Number(req.params.id)
+    if (!esAdmin && !esPropioId) {
+        return res.status(403).json({ error: 'No tenés permisos para ver la agenda de otro barbero' })
+    }
+    next()
+}, turnosController.listarTurnosBarbero)
 
-// GET /turnos/:id - Obtener por ID
+// Pública — el cliente obtiene un turno por ID (para ver su confirmación)
 router.get('/:id', turnosController.obtenerTurno)
 
-// POST /turnos - Crear
+// Pública — el cliente reserva su turno desde la web
 router.post('/', validarTurno, handleValidationErrors, turnosController.crearTurno)
 
-// PUT /turnos/:id - Actualizar
+// Pública — el cliente cancela su propio turno (soft delete)
+router.delete('/:id', turnosController.eliminarTurno)
+
+// Protegida — solo staff puede modificar datos de un turno
 router.put(
     '/:id',
+    verificarToken,
     [
         body('fecha')
-        .optional()
-        .trim()
-        .notEmpty()
-        .withMessage('La fecha no puede estar vacía')
-        .isISO8601()
-        .withMessage('La fecha debe estar en formato ISO8601'),
+            .optional()
+            .trim()
+            .notEmpty()
+            .withMessage('La fecha no puede estar vacía')
+            .isISO8601()
+            .withMessage('La fecha debe estar en formato ISO8601'),
         body('hora')
-        .optional()
-        .trim()
-        .notEmpty()
-        .withMessage('La hora no puede estar vacía')
-        .matches(/^([01][0-9]|2[0-3]):[0-5][0-9]$/)
-        .withMessage('La hora debe estar en formato HH:mm'),
+            .optional()
+            .trim()
+            .notEmpty()
+            .withMessage('La hora no puede estar vacía')
+            .matches(/^([01][0-9]|2[0-3]):[0-5][0-9]$/)
+            .withMessage('La hora debe estar en formato HH:mm'),
         body('barberoId')
-        .optional()
-        .isInt({ min: 1 })
-        .withMessage('El barberoId debe ser un número válido'),
+            .optional()
+            .isInt({ min: 1 })
+            .withMessage('El barberoId debe ser un número válido'),
         body('servicioId')
-        .optional()
-        .isInt({ min: 1 })
-        .withMessage('El servicioId debe ser un número válido'),
+            .optional()
+            .isInt({ min: 1 })
+            .withMessage('El servicioId debe ser un número válido'),
         body('estado')
-        .optional()
-        .isIn(['activo', 'cancelado', 'completado'])
-        .withMessage('El estado debe ser válido'),
+            .optional()
+            .isIn(['activo', 'cancelado', 'completado'])
+            .withMessage('El estado debe ser válido'),
     ],
     handleValidationErrors,
     turnosController.actualizarTurno
 )
-
-// DELETE /turnos/:id - Eliminar/Cancelar
-router.delete('/:id', turnosController.eliminarTurno)
 
 module.exports = router

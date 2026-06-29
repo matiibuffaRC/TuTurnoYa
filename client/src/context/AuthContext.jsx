@@ -4,32 +4,56 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
     const [barbero, setBarbero] = useState(() => {
-        const stored = sessionStorage.getItem('barbero')
+        const stored = localStorage.getItem('barbero')
         return stored ? JSON.parse(stored) : null
     })
-    const [token, setToken] = useState(() => sessionStorage.getItem('token') || null)
+    const [usuario, setUsuario] = useState(() => {
+        const stored = localStorage.getItem('usuario')
+        return stored ? JSON.parse(stored) : null
+    })
+    const [token, setToken] = useState(() => localStorage.getItem('token') || null)
 
-    const login = (tokenData, barberoData) => {
-        sessionStorage.setItem('token', tokenData)
-        sessionStorage.setItem('barbero', JSON.stringify(barberoData))
+    const limpiarStorage = () => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('barbero')
+        localStorage.removeItem('usuario')
+        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('barbero')
+        sessionStorage.removeItem('usuario')
+    }
+
+    const login = (tokenData, barberoData, usuarioData) => {
+        limpiarStorage()
+        setBarbero(null)
+        setUsuario(null)
+
+        localStorage.setItem('token', tokenData)
         setToken(tokenData)
-        setBarbero(barberoData)
+
+        if (barberoData) {
+            localStorage.setItem('barbero', JSON.stringify(barberoData))
+            setBarbero(barberoData)
+        }
+        if (usuarioData) {
+            localStorage.setItem('usuario', JSON.stringify(usuarioData))
+            setUsuario(usuarioData)
+        }
     }
 
     const logout = () => {
-        sessionStorage.removeItem('token')
-        sessionStorage.removeItem('barbero')
+        limpiarStorage()
         setToken(null)
         setBarbero(null)
+        setUsuario(null)
     }
 
     const actualizarBarbero = (barberoData) => {
-        sessionStorage.setItem('barbero', JSON.stringify(barberoData))
+        localStorage.setItem('barbero', JSON.stringify(barberoData))
         setBarbero(barberoData)
     }
 
     return (
-        <AuthContext.Provider value={{ barbero, token, login, logout, actualizarBarbero }}>
+        <AuthContext.Provider value={{ barbero, usuario, token, login, logout, actualizarBarbero }}>
             {children}
         </AuthContext.Provider>
     )
