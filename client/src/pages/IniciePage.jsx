@@ -59,6 +59,7 @@ export default function ReservarTurno() {
 
     const handleBarbero = async (id) => {
         actualizarCampo('barberoId', id)
+        
         actualizarCampo('servicioId', '')
         actualizarCampo('hora', '')
         actualizarCampo('fecha', '')
