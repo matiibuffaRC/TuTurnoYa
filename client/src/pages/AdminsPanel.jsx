@@ -43,14 +43,14 @@ const AdminsPanel = () => {
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-[#f7f4ef] p-4 md:p-10 montserrat-alternates">
             <div className="max-w-5xl w-full bg-white rounded-3xl border border-[#e8e2d8] shadow-[0_20px_60px_-10px_rgba(30,37,53,0.10)] overflow-hidden grid md:grid-cols-12 min-h-140">
 
-                {/* Izquierda */}
+                {/* Desktop */}
                 <div className="hidden md:flex md:col-span-6 bg-[#1e2535] p-12 flex-col justify-between relative overflow-hidden">
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(180,130,50,0.07)_0%, transparent_55%)] pointer-events-none" />
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(180,130,50,0.07)_0%, transparent_55%)] pointer-events-none" />
 
                     <div className="relative z-10">
                         <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase text-amber-400 border border-amber-400/30 px-3 py-1.5 rounded-full">
-                            Portal Empleados
+                            Portal de inicio de sesión
                         </span>
                     </div>
 
@@ -83,11 +83,11 @@ const AdminsPanel = () => {
                     </p>
                 </div>
 
-                {/* Derecha */}
+                {/* Mobile */}
                 <div className="col-span-12 md:col-span-6 p-8 sm:p-12 md:p-14 flex flex-col justify-center">
                     <div className="block md:hidden text-center mb-8">
                         <h2 className="text-4xl font-black text-[#1e2535] tracking-tight">TuTurnoYa</h2>
-                        <p className="text-sm text-[#8a8070] mt-1 font-medium uppercase tracking-widest">Portal Empleados</p>
+                        <p className="text-sm text-[#8a8070] mt-1 font-medium uppercase tracking-widest">Portal de inicio de sesión</p>
                     </div>
 
                     <div className="hidden md:block mb-8">
@@ -108,7 +108,7 @@ const AdminsPanel = () => {
                             <InputField label="Contraseña" type="password" name="password" value={credentials.password} onChange={handleChange} placeholder="••••••••" />
                         </div>
 
-                        <button type="submit" disabled={isLoading} className="w-full mt-2 bg-[#1e2535] hover:bg-[#2d3748] text-white font-semibold text-sm py-3.5 px-4 rounded-xl transition-colors duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" >
+                        <button type="submit" disabled={isLoading} className="w-full mt-2 bg-[#1e2535] hover:bg-[#2d3748] text-white font-semibold text-sm py-3.5 px-4 rounded-full transition-colors duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" >
                         {isLoading ? (
                             <span className="flex items-center justify-center gap-2">
                                 <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
