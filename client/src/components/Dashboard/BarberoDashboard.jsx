@@ -115,15 +115,12 @@ export default function BarberoDashboard() {
                             {barbero.sucursal?.nombre} · {barbero.email}
                         </p>
                     </div>
-                    <button
-                        onClick={cerrarSesion}
-                        className="shrink-0 text-xs font-semibold text-[#8a8070] border border-[#e8e2d8] hover:border-[#c8c0b0] hover:text-[#1e2535] px-3 sm:px-4 py-2 rounded-xl transition-colors cursor-pointer"
-                    >
+                    <button onClick={cerrarSesion} className="shrink-0 text-xs font-semibold text-[#8a8070] border border-[#e8e2d8] hover:border-[#c8c0b0] hover:text-[#1e2535] px-3 sm:px-4 py-2 rounded-xl transition-colors cursor-pointer" >
                         Salir
                     </button>
                 </div>
 
-                {/* Info cards — 1 col mobile, 3 col md+ */}
+                {/* Datas sucursal */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
                     {[
                         { label: "Sucursal", value: barbero.sucursal?.nombre || "—" },
@@ -143,14 +140,10 @@ export default function BarberoDashboard() {
                     ))}
                 </div>
 
-                {/* Toggle agenda — apila verticalmente en mobile */}
-                <div className={`mb-5 rounded-xl border px-4 sm:px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                    agendaAbierta ? "bg-white border-[#e8e2d8]" : "bg-[#1e2535] border-[#1e2535]"
-                }`}>
+                {/* Agenda abierta */}
+                <div className={`mb-5 rounded-xl border px-4 sm:px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${ agendaAbierta ? "bg-white border-[#e8e2d8]" : "bg-[#1e2535] border-[#1e2535]"}`}>
                     <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                            agendaAbierta ? "bg-green-50 text-green-700" : "bg-white/10 text-amber-400"
-                        }`}>
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${agendaAbierta ? "bg-green-50 text-green-700" : "bg-white/10 text-amber-400"}`}>
                             {agendaAbierta ? <IconUnlock /> : <IconLock />}
                         </div>
                         <div>
@@ -158,21 +151,11 @@ export default function BarberoDashboard() {
                                 {agendaAbierta ? "Agenda abierta" : "Agenda cerrada"}
                             </p>
                             <p className={`text-xs mt-0.5 ${agendaAbierta ? "text-[#8a8070]" : "text-white/60"}`}>
-                                {agendaAbierta
-                                    ? "Los clientes pueden reservar turnos contigo."
-                                    : "No se aceptan nuevas reservas."}
+                                {agendaAbierta ? "Los clientes pueden reservar turnos contigo." : "No se aceptan nuevas reservas."}
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={handleToggleAgenda}
-                        disabled={toggling}
-                        className={`w-full sm:w-auto text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 ${
-                            agendaAbierta
-                                ? "bg-[#1e2535] text-white hover:bg-[#2d3748]"
-                                : "bg-white text-[#1e2535] hover:bg-[#f7f4ef]"
-                        }`}
-                    >
+                    <button onClick={handleToggleAgenda} disabled={toggling} className={`w-full sm:w-auto text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 ${ agendaAbierta ? "bg-[#1e2535] text-white hover:bg-[#2d3748]" : "bg-white text-[#1e2535] hover:bg-[#f7f4ef]" }`} >
                         {toggling ? "..." : agendaAbierta ? "Cerrar agenda" : "Abrir agenda"}
                     </button>
                 </div>
@@ -185,30 +168,16 @@ export default function BarberoDashboard() {
                                 <label className="block text-xs font-bold text-[#8a8070] uppercase mb-1 tracking-widest">
                                     Hora Entrada
                                 </label>
-                                <input
-                                    type="time"
-                                    value={horarioEntrada}
-                                    onChange={(e) => setHorarioEntrada(e.target.value)}
-                                    className="w-full border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-sm font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535]"
-                                />
+                                <input type="time" value={horarioEntrada} onChange={(e) => setHorarioEntrada(e.target.value)} className="w-full border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-sm font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535]" />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-[#8a8070] uppercase mb-1 tracking-widest">
                                     Hora Salida
                                 </label>
-                                <input
-                                    type="time"
-                                    value={horarioSalida}
-                                    onChange={(e) => setHorarioSalida(e.target.value)}
-                                    className="w-full border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-sm font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535]"
-                                />
+                                <input type="time" value={horarioSalida} onChange={(e) => setHorarioSalida(e.target.value)} className="w-full border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-sm font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535]" />
                             </div>
                         </div>
-                        <button
-                            onClick={handleUpdateHorarios}
-                            disabled={savingHorarios}
-                            className="w-full sm:w-auto bg-[#1e2535] text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-[#2d3748] transition-colors disabled:opacity-50 cursor-pointer"
-                        >
+                        <button onClick={handleUpdateHorarios} disabled={savingHorarios} className="w-full sm:w-auto bg-[#1e2535] text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-[#2d3748] transition-colors disabled:opacity-50 cursor-pointer" >
                             {savingHorarios ? "Guardando..." : "Guardar Horarios"}
                         </button>
                     </div>
@@ -217,12 +186,8 @@ export default function BarberoDashboard() {
                 <div className="bg-white rounded-2xl border border-[#e8e2d8] mb-5">
                     <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[#f0ece4] gap-3">
                         <h2 className="text-sm font-black text-[#1e2535] uppercase tracking-wider">Agenda</h2>
-                        <input
-                            type="date"
-                            value={fecha}
-                            onChange={(e) => handleFecha(e.target.value)}
-                            className="border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-xs font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535] transition-all cursor-pointer"
-                        />
+                        {/* Input de selección de fecha */}
+                        <input type="date" value={fecha} onChange={(e) => handleFecha(e.target.value)} className="border border-[#e8e2d8] bg-[#faf8f5] rounded-xl px-3 py-2 text-xs font-semibold text-[#1e2535] focus:outline-none focus:border-[#1e2535] transition-all cursor-pointer" />
                     </div>
 
                     {loading && (

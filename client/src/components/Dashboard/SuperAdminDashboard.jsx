@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function SuperAdminDashboard() {
     const { token, usuario, logout } = useAuth();
     const navigate = useNavigate();
+    
     const [activeTab, setActiveTab] = useState("sucursales");
     const [sucursales, setSucursales] = useState([]);
     const [barberos, setBarberos] = useState([]);
@@ -40,6 +41,7 @@ export default function SuperAdminDashboard() {
         navigate("/admins-panel");
     };
 
+    // Abrimos el menú para la carga de una sucursal o un barbero
     const abrirModalNuevo = () => {
         setModoEdicion(false);
         setEntidadActual(null);
@@ -52,6 +54,7 @@ export default function SuperAdminDashboard() {
         setModalAbierto(true);
     };
 
+    // Abrimos el menú para la edición de una sucursal o un barbero
     const abrirModalEdicion = (entidad) => {
         setModoEdicion(true);
         setEntidadActual(entidad);
@@ -126,7 +129,7 @@ export default function SuperAdminDashboard() {
 
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-4">
-                    <div className="min-w-0">
+                    <div className="min-w-0 mt-5">
                         <span className="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-black tracking-widest uppercase rounded-full mb-2">
                             Admin Central
                         </span>
@@ -135,10 +138,7 @@ export default function SuperAdminDashboard() {
                             Hola, {usuario.nombre} · {usuario.email}
                         </p>
                     </div>
-                    <button
-                        onClick={cerrarSesion}
-                        className="shrink-0 text-xs font-semibold text-gray-400 border border-gray-700 hover:border-gray-500 hover:text-white px-5 py-2.5 rounded-xl transition-all"
-                    >
+                    <button onClick={cerrarSesion} className="shrink-0 text-xs font-semibold text-gray-400 border border-gray-700 hover:border-gray-500 hover:text-white px-5 py-2.5 rounded-xl transition-all" >
                         Salir
                     </button>
                 </div>
@@ -146,15 +146,7 @@ export default function SuperAdminDashboard() {
                 {/* Tabs */}
                 <div className="flex gap-4 border-b border-gray-800 mb-6 sm:mb-8">
                     {["sucursales", "barberos"].map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`pb-4 px-2 text-sm font-bold transition-colors border-b-2 ${
-                                activeTab === tab
-                                    ? "border-amber-400 text-amber-400"
-                                    : "border-transparent text-gray-500 hover:text-gray-300"
-                            }`}
-                        >
+                        <button key={tab} onClick={() => setActiveTab(tab)} className={`cursor-pointer pb-4 px-2 text-sm font-bold transition-colors border-b-2 ${ activeTab === tab ? "border-amber-400 text-amber-400" : "border-transparent text-gray-500 hover:text-gray-300" }`} >
                             {tab === "sucursales" ? "Sucursales" : "Barberos"}
                         </button>
                     ))}
@@ -165,10 +157,7 @@ export default function SuperAdminDashboard() {
                     <h2 className="text-lg sm:text-xl font-black text-white">
                         {activeTab === "sucursales" ? "Gestión de Sucursales" : "Gestión de Barberos"}
                     </h2>
-                    <button
-                        onClick={abrirModalNuevo}
-                        className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold text-xs px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-500/20"
-                    >
+                    <button onClick={abrirModalNuevo} className="cursor-pointer w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold text-xs px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-500/20" >
                         + Agregar {activeTab === "sucursales" ? "Sucursal" : "Barbero"}
                     </button>
                 </div>
@@ -209,8 +198,8 @@ export default function SuperAdminDashboard() {
                                             <td className="px-6 py-4">{suc.direccion}</td>
                                             <td className="px-6 py-4 text-amber-400/80">{suc.horarioApertura} - {suc.horarioCierre}</td>
                                             <td className="px-6 py-4 text-right space-x-3">
-                                                <button onClick={() => abrirModalEdicion(suc)} className="text-blue-400 hover:text-blue-300 font-semibold text-xs">Editar</button>
-                                                <button onClick={() => handleEliminar(suc.id)} className="text-red-400 hover:text-red-300 font-semibold text-xs">Eliminar</button>
+                                                <button onClick={() => abrirModalEdicion(suc)} className="cursor-pointer text-blue-400 hover:text-blue-300 font-semibold text-xs">Editar</button>
+                                                <button onClick={() => handleEliminar(suc.id)} className="cursor-pointer text-red-400 hover:text-red-300 font-semibold text-xs">Eliminar</button>
                                             </td>
                                         </tr>
                                     ))
@@ -224,8 +213,8 @@ export default function SuperAdminDashboard() {
                                             </td>
                                             <td className="px-6 py-4 text-amber-400/80">{barb.horarioEntrada} - {barb.horarioSalida}</td>
                                             <td className="px-6 py-4 text-right space-x-3">
-                                                <button onClick={() => abrirModalEdicion(barb)} className="text-blue-400 hover:text-blue-300 font-semibold text-xs">Editar</button>
-                                                <button onClick={() => handleEliminar(barb.id)} className="text-red-400 hover:text-red-300 font-semibold text-xs">Eliminar</button>
+                                                <button onClick={() => abrirModalEdicion(barb)} className="hover:cursor-pointer text-blue-400 hover:text-blue-300 font-semibold text-xs">Editar</button>
+                                                <button onClick={() => handleEliminar(barb.id)} className="hover:cursor-pointer text-red-400 hover:text-red-300 font-semibold text-xs">Eliminar</button>
                                             </td>
                                         </tr>
                                     ))
@@ -241,8 +230,8 @@ export default function SuperAdminDashboard() {
                         </table>
                     </div>
 
-                    {/* Cards — solo mobile */}
-                    <div className="sm:hidden divide-y divide-gray-800">
+                    {/* Mobile */}
+                    <div className="sm:hidden divide-y divide-gray-800 ">
                         {activeTab === "sucursales" ? (
                             sucursales.length === 0 ? (
                                 <p className="px-5 py-12 text-center text-gray-500 text-sm">No se encontraron registros.</p>
@@ -258,8 +247,8 @@ export default function SuperAdminDashboard() {
                                         </div>
                                         <p className="text-xs text-amber-400/80">{suc.horarioApertura} - {suc.horarioCierre}</p>
                                         <div className="flex gap-4 pt-1">
-                                            <button onClick={() => abrirModalEdicion(suc)} className="text-blue-400 hover:text-blue-300 font-semibold text-xs">Editar</button>
-                                            <button onClick={() => handleEliminar(suc.id)} className="text-red-400 hover:text-red-300 font-semibold text-xs">Eliminar</button>
+                                            <button onClick={() => abrirModalEdicion(suc)} className="hover:cursor-pointer text-blue-400 hover:text-blue-300 font-semibold text-xs">Editar</button>
+                                            <button onClick={() => handleEliminar(suc.id)} className="hover:cursor-pointer text-red-400 hover:text-red-300 font-semibold text-xs">Eliminar</button>
                                         </div>
                                     </div>
                                 ))
@@ -281,8 +270,8 @@ export default function SuperAdminDashboard() {
                                         </div>
                                         <p className="text-xs text-amber-400/80">{barb.horarioEntrada} - {barb.horarioSalida}</p>
                                         <div className="flex gap-4 pt-1">
-                                            <button onClick={() => abrirModalEdicion(barb)} className="text-blue-400 hover:text-blue-300 font-semibold text-xs">Editar</button>
-                                            <button onClick={() => handleEliminar(barb.id)} className="text-red-400 hover:text-red-300 font-semibold text-xs">Eliminar</button>
+                                            <button onClick={() => abrirModalEdicion(barb)} className="hover:cursor-pointer text-blue-400 hover:text-blue-300 font-semibold text-xs">Editar</button>
+                                            <button onClick={() => handleEliminar(barb.id)} className="hover:cursor-pointer text-red-400 hover:text-red-300 font-semibold text-xs">Eliminar</button>
                                         </div>
                                     </div>
                                 ))
@@ -301,11 +290,7 @@ export default function SuperAdminDashboard() {
                             <h3 className="text-lg sm:text-xl font-black text-white">
                                 {modoEdicion ? "Editar" : "Nuevo"} {activeTab === "sucursales" ? "Sucursal" : "Barbero"}
                             </h3>
-                            <button
-                                onClick={() => setModalAbierto(false)}
-                                className="text-gray-500 hover:text-white text-xl leading-none"
-                                aria-label="Cerrar"
-                            >
+                            <button onClick={() => setModalAbierto(false)} className="text-gray-500 hover:text-white text-xl leading-none" aria-label="Cerrar" >
                                 ✕
                             </button>
                         </div>
@@ -393,17 +378,10 @@ export default function SuperAdminDashboard() {
                             )}
 
                             <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-800">
-                                <button
-                                    type="button"
-                                    onClick={() => setModalAbierto(false)}
-                                    className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold text-gray-400 hover:text-white transition-colors text-center"
-                                >
+                                <button type="button" onClick={() => setModalAbierto(false)} className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold text-gray-400 hover:text-white transition-colors text-center" >
                                     Cancelar
                                 </button>
-                                <button
-                                    type="submit"
-                                    className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold text-sm px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-500/20"
-                                >
+                                <button type="submit" className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold text-sm px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-500/20" >
                                     Guardar
                                 </button>
                             </div>

@@ -90,16 +90,18 @@ export default function ReservarTurno() {
 
     const handleConfirmar = async () => {
         setError('')
-
-        const res = await crearTurno({
-            fecha: form.fecha,
-            hora: form.hora,
-            nombre: form.nombre,
-            apellido: form.apellido,
-            email: form.email,
-            barberoId: Number(form.barberoId),
-            servicioId: Number(form.servicioId),
-        })
+        
+        const res = await crearTurno(
+            {
+                fecha: form.fecha,
+                hora: form.hora,
+                nombre: form.nombre,
+                apellido: form.apellido,
+                email: form.email,
+                barberoId: Number(form.barberoId),
+                servicioId: Number(form.servicioId),
+            }
+        )
 
         if (res.error) {
             setError(res.error)
@@ -109,6 +111,7 @@ export default function ReservarTurno() {
         setTurnoConfirmado(res)
     }
 
+    // Función para reservar otro turno
     const handleNuevoTurno = () => {
         setTurnoConfirmado(null)
         setForm(FORM_INICIAL)
