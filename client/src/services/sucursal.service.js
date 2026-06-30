@@ -17,3 +17,40 @@ export const getSucursales = async () => {
         return null;
     }
 };
+
+export const createSucursal = async (data, token) => {
+    const response = await fetch(`${BASE}/sucursales`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    })
+
+    return response.json()
+}
+
+export const updateSucursal = async (id, data, token) => {
+    const response = await fetch(`${BASE}/sucursales/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    })
+
+    return response.json()
+}
+
+export const deleteSucursal = async (id, token) => {
+    const response = await fetch(`${BASE}/sucursales/${id}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+
+    return response.json()
+}

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { getBarberos, createBarbero, updateBarbero, deleteBarbero, getSucursales, createSucursal, updateSucursal, deleteSucursal } from "../../api";
+import { getBarberos, createBarbero, updateBarbero, deleteBarbero } from "../../services/barbero.service";
+import { getSucursales, createSucursal, updateSucursal, deleteSucursal } from "../../services/sucursal.service";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function SuperAdminDashboard() {
     const { token, usuario, logout } = useAuth();
     const navigate = useNavigate();
-    
+
     const [activeTab, setActiveTab] = useState("sucursales");
     const [sucursales, setSucursales] = useState([]);
     const [barberos, setBarberos] = useState([]);
@@ -146,7 +147,7 @@ export default function SuperAdminDashboard() {
                 {/* Tabs */}
                 <div className="flex gap-4 border-b border-gray-800 mb-6 sm:mb-8">
                     {["sucursales", "barberos"].map((tab) => (
-                        <button key={tab} onClick={() => setActiveTab(tab)} className={`cursor-pointer pb-4 px-2 text-sm font-bold transition-colors border-b-2 ${ activeTab === tab ? "border-amber-400 text-amber-400" : "border-transparent text-gray-500 hover:text-gray-300" }`} >
+                        <button key={tab} onClick={() => setActiveTab(tab)} className={`cursor-pointer pb-4 px-2 text-sm font-bold transition-colors border-b-2 ${activeTab === tab ? "border-amber-400 text-amber-400" : "border-transparent text-gray-500 hover:text-gray-300"}`} >
                             {tab === "sucursales" ? "Sucursales" : "Barberos"}
                         </button>
                     ))}

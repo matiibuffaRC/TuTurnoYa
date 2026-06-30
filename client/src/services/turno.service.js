@@ -1,5 +1,7 @@
 import { BASE } from "./api";
 
+
+// Peticiones de lectura (Petición tipo GET)
 export const getDisponibles = async (barberoId, fecha, servicioId) => {
     try {
         const response = await fetch(`${BASE}/turnos/disponibles?barberoId=${barberoId}&fecha=${fecha}&servicioId=${servicioId}`)
@@ -19,6 +21,8 @@ export const getTurnosPorEmail = async (email) => {
         console.error('Error fetching turnos:', error)
     }
 }
+
+// --- CRUD ---
 
 export const crearTurno = async (data) => {
     try {
