@@ -1,18 +1,27 @@
+// Importamos dependencias
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Importamos funciones desde el service
 import { getBarberos, createBarbero, updateBarbero, deleteBarbero } from "../../services/barbero.service";
 import { getSucursales, createSucursal, updateSucursal, deleteSucursal } from "../../services/sucursal.service";
+
+// Importamos contexto
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 export default function SuperAdminDashboard() {
     const { token, usuario, logout } = useAuth();
     const navigate = useNavigate();
 
+    // Almacenamos lo que selecciona el administrador (Sucursal o babero)
     const [activeTab, setActiveTab] = useState("sucursales");
+    
+    // Almacenmos los valores que se obtienen
     const [sucursales, setSucursales] = useState([]);
     const [barberos, setBarberos] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Ventana modal que abrimos al querer editar o crear un nuevo elemento
     const [modalAbierto, setModalAbierto] = useState(false);
     const [modoEdicion, setModoEdicion] = useState(false);
     const [entidadActual, setEntidadActual] = useState(null);
@@ -25,6 +34,8 @@ export default function SuperAdminDashboard() {
         }
     }, [token, usuario]);
 
+    
+    // Acordate de validar el tipo de usuario registrado para pedir información
     const cargarDatos = async () => {
         setLoading(true);
         try {
@@ -153,7 +164,7 @@ export default function SuperAdminDashboard() {
                     ))}
                 </div>
 
-                {/* Subheader + CTA */}
+                {/* Mostramos los datos que obtenemos dependiendo de la selección */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                     <h2 className="text-lg sm:text-xl font-black text-white">
                         {activeTab === "sucursales" ? "Gestión de Sucursales" : "Gestión de Barberos"}

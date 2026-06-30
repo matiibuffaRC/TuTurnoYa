@@ -5,21 +5,27 @@ import { useNavigate } from "react-router-dom";
 // Importamos el contexto
 import { useAuth } from "../../context/AuthContext";
 
-// 
+// Importamos funciones desde el service
 import { toggleAgenda, updateHorarios } from "../../services/barbero.service";
+
+// Importamos componentes
 import PanelServicios from "./PanelServicios";
+
+// Importamos íconos
 import { IconCalendar, IconLock, IconUnlock } from "./icons";
 
+// Formate AÑO/MES/DIA
 const hoy = new Date().toISOString().split("T")[0];
 
 export default function BarberoDashboard() {
     const navigate = useNavigate();
     const { barbero, token, actualizarBarbero, logout } = useAuth();
 
-    const [turnos, setTurnos] = useState([]);
-    const [fecha, setFecha] = useState(hoy);
-    const [loading, setLoading] = useState(false);
-    const [toggling, setToggling] = useState(false);
+
+    const [turnos, setTurnos] = useState([]); // Almacenamos los turnos obtenidos para "x" día
+    const [fecha, setFecha] = useState(hoy); // Almacenamos automáticamente la fecha del día
+    const [loading, setLoading] = useState(false); // Aguardamos estado de carga o no
+    const [toggling, setToggling] = useState(false); //Estado de cerrando agenda
 
     const [horarioEntrada, setHorarioEntrada] = useState("09:00");
     const [horarioSalida, setHorarioSalida] = useState("20:00");
@@ -35,11 +41,11 @@ export default function BarberoDashboard() {
         fetchTurnos(barbero.id, hoy, token);
     }, [navigate, token, barbero]);
 
-    const fetchTurnos = async (barberoId, f, tok) => {
+    const fetchTurnos = async (barberoId, fecha, tok) => {
         setLoading(true);
         try {
             const res = await fetch(
-                `${import.meta.env.VITE_API_URL || "http://localhost:3001"}/turnos/barbero/${barberoId}?fecha=${f}`,
+                `${import.meta.env.VITE_API_URL || "http://localhost:3001"}/turnos/barbero/${barberoId}?fecha=${fecha}`,
                 { headers: { Authorization: `Bearer ${tok}` } }
             );
             const data = await res.json();
@@ -50,8 +56,8 @@ export default function BarberoDashboard() {
         setLoading(false);
     };
 
-    const handleFecha = (f) => {
-        setFecha(f);
+    const handleFecha = (fecha) => {
+        setFecha(fecha);
         if (barbero && token) fetchTurnos(barbero.id, f, token);
     };
 
@@ -100,7 +106,7 @@ export default function BarberoDashboard() {
 
     if (!barbero) return null;
 
-    const turnosActivos = turnos.filter((t) => t.estado === "activo");
+    const turnosActivos = turnos.filter((turno) => turno.estado === "activo");
     const agendaAbierta = barbero.agendaAbierta !== false;
 
     return (
@@ -165,7 +171,7 @@ export default function BarberoDashboard() {
                     </button>
                 </div>
 
-                {/* Horarios — inputs full width en mobile */}
+                {/* Horarios  */}
                 <div className="bg-white rounded-xl border border-[#e8e2d8] px-4 sm:px-5 py-4 mb-5">
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                         <div className="grid grid-cols-2 gap-3 flex-1">
@@ -212,14 +218,14 @@ export default function BarberoDashboard() {
                     {!loading && turnosActivos.length > 0 && (
                         <div className="divide-y divide-[#f0ece4]">
                             {turnosActivos
-                                .sort((a, b) => a.hora.localeCompare(b.hora))
-                                .map((t) => (
-                                    <div key={t.id} className="px-4 sm:px-6 py-4 transition-colors">
+                                .sort((a, b) => a.hora.localeCompare(b.hora)) // Ordenamos por horario
+                                .map((turno) => (
+                                    <div key={turno.id} className="px-4 sm:px-6 py-4 transition-colors">
                                         {/* Mobile: apilado. Desktop: fila */}
                                         <div className="flex items-start sm:items-center gap-3 sm:gap-5">
                                             {/* Hora */}
                                             <div className="w-12 sm:w-14 shrink-0">
-                                                <p className="text-base font-black text-[#1e2535]">{t.hora}</p>
+                                                <p className="text-base font-black text-[#1e2535]">{turno.hora}</p>
                                             </div>
 
                                             <div className="hidden sm:block w-px h-10 bg-[#e8e2d8] shrink-0" />
@@ -227,17 +233,17 @@ export default function BarberoDashboard() {
                                             {/* Cliente + servicio */}
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-semibold text-sm text-[#1e2535] truncate">
-                                                    {t.cliente?.nombre} {t.cliente?.apellido}
+                                                    {turno.cliente?.nombre} {turno.cliente?.apellido}
                                                 </p>
                                                 <p className="text-xs text-[#8a8070] mt-0.5">
-                                                    {t.servicio?.tipo} · {t.servicio?.duracion} min
+                                                    {turno.servicio?.tipo} · {turno.servicio?.duracion} min
                                                 </p>
                                             </div>
 
                                             {/* Precio + estado */}
                                             <div className="text-right shrink-0">
                                                 <p className="font-black text-sm text-[#1e2535]">
-                                                    ${t.servicio?.precio?.toLocaleString("es-AR")}
+                                                    ${turno.servicio?.precio?.toLocaleString("es-AR")}
                                                 </p>
                                                 <span className="text-xs text-green-700 font-semibold bg-green-50 border border-green-100 px-2 py-0.5 rounded-full">
                                                     Confirmado

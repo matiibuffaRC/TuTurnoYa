@@ -4,20 +4,17 @@ import { BASE } from "./api";
 // Peticiones de lectura (Petición tipo GET)
 
 export const getBarberos = async (sucursalId) => {
-    try {
-        const response = await fetch(`${BASE}/barberos?sucursalId=${sucursalId}`);
+    const url = sucursalId
+        ? `${BASE}/barberos?sucursalId=${sucursalId}`
+        : `${BASE}/barberos`;
 
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
+    const response = await fetch(url);
 
-        const data = await response.json();
-        return data;
-
-    } catch (error) {
-        console.error('Error fetching barberos:', error);
-        return null;
+    if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
     }
+
+    return await response.json();
 };
 
 export const getServiciosBarbero = async (barberoId) => {
