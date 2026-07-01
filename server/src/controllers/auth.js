@@ -6,6 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 const login = async (req, res) => {
     try {
+        // Traemos el email y la password desde la petición
         const { email, password } = req.body
 
         if (!email || !password) {
@@ -27,7 +28,7 @@ const login = async (req, res) => {
             const token = jwt.sign(
                 { id: barbero.id, email: barbero.email, rol: 'BARBERO' },
                 JWT_SECRET,
-                { expiresIn: '8h' }
+                { expiresIn: '2h' }
             )
 
             // Eliminar datos sensibles antes de retornar
@@ -53,7 +54,7 @@ const login = async (req, res) => {
         const token = jwt.sign(
             { id: usuario.id, email: usuario.email, rol: usuario.rol },
             JWT_SECRET,
-            { expiresIn: '8h' }
+            { expiresIn: '2h' }
         )
 
         const { password: _, ...usuarioSinPassword } = usuario

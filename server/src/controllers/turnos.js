@@ -7,6 +7,7 @@ const toMinutes = (hhmm) => {
     return h * 60 + m
 }
 
+// Verificamos que un nuevo turno (Ejemplo una tintura) no se superponga con otro turno
 const overlaps = (startA, durA, startB, durB) =>
     startA < startB + durB && startA + durA > startB
 

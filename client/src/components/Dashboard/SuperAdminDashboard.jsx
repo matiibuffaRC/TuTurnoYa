@@ -100,6 +100,7 @@ export default function SuperAdminDashboard() {
                     if (!dataAEnviar.password) delete dataAEnviar.password;
                     await updateBarbero(entidadActual.id, dataAEnviar, token);
                 } else {
+                    console.log("Datos del nuevo barbero:", dataAEnviar);
                     await createBarbero(dataAEnviar, token);
                 }
             }
