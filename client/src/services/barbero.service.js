@@ -1,6 +1,5 @@
 import { BASE } from "./api";
 
-
 // Peticiones de lectura (Petición tipo GET)
 
 export const getBarberos = async (sucursalId) => {
@@ -23,7 +22,7 @@ export const getServiciosBarbero = async (barberoId) => {
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
         return await response.json();
     } catch (error) {
-        console.error('Error fetching servicios del barbero:', error);
+        console.error("Error fetching servicios del barbero:", error);
         return [];
     }
 };
@@ -32,51 +31,51 @@ export const getServiciosBarbero = async (barberoId) => {
 
 export const createBarbero = async (data, token) => {
     const response = await fetch(`${BASE}/barberos`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
-    })
+    });
 
-    return response.json()
-}
+    return response.json();
+};
 
 export const updateBarbero = async (barberoId, data, token) => {
     const response = await fetch(`${BASE}/barberos/${barberoId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
-    })
+    });
 
-    return response.json()
-}
+    return response.json();
+};
 
 export const deleteBarbero = async (barberoId, token) => {
     const response = await fetch(`${BASE}/barberos/${barberoId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-            Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         },
-    })
+    });
 
-    return response.json()
-}
-
+    return response.json();
+};
 
 // Con esta función un barbero puede abrir o cerrar su agenda
 export const toggleAgenda = async (barberoId, token) => {
     try {
         const response = await fetch(`${BASE}/barberos/${barberoId}/agenda`, {
-            method: 'PATCH',
+            method: "PATCH",
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
+            },
             }
-        });
+        );
 
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
@@ -84,9 +83,8 @@ export const toggleAgenda = async (barberoId, token) => {
 
         const data = await response.json();
         return data;
-
     } catch (error) {
-        console.error('Error toggling agenda:', error);
+        console.error("Error toggling agenda:", error);
         return null;
     }
 };
@@ -95,41 +93,48 @@ export const toggleAgenda = async (barberoId, token) => {
 export const setServiciosBarbero = async (barberoId, servicioIds, token) => {
     try {
         const response = await fetch(`${BASE}/barberos/${barberoId}/servicios`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
             body: JSON.stringify({ servicioIds }),
-        });
+            }
+        );
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
         return await response.json();
     } catch (error) {
-        console.error('Error actualizando servicios del barbero:', error);
+        console.error("Error actualizando servicios del barbero:", error);
         return null;
     }
 };
 
-
 // Elección de los horarios de trabajo
 export const updateHorarios = async (barberoId, horarios, token) => {
     try {
+        const payload = {
+            horarioEntrada: horarios?.horarioEntrada,
+            horarioSalida: horarios?.horarioSalida,
+        };
+
         const response = await fetch(`${BASE}/barberos/${barberoId}/horarios`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            // Le tenemos que enviar el horario de entrada y el de salida
-            body: JSON.stringify({ horarios })
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
         });
 
+        const data = await response.json().catch(() => ({}));
+
         if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+        throw new Error(data.error || `Error HTTP: ${response.status}`);
         }
 
-        const data = await response.json();
         return data;
-
     } catch (error) {
-        console.error('Error actualizando horarios:', error);
-        return null;
+        console.error("Error actualizando horarios:", error);
+        throw error;
     }
 };

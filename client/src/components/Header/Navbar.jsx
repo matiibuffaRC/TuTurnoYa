@@ -7,7 +7,8 @@ import MobileDrawer from './MobileDrawer'
 
 export default function Navbar() {
     const { pathname } = useLocation()
-    const { barbero, usuario, links, drawerAbierto, cerrarSesion, cerrarDrawer, toggleDrawer } = useNavbar()
+
+    const { barbero, usuario, links, drawerAbierto, cerrarSesion, cerrarDrawer, toggleDrawer, } = useNavbar()
 
     return (
         <>
@@ -16,13 +17,16 @@ export default function Navbar() {
                     <Link to={barbero || usuario ? '/dashboard' : '/'} className="text-white text-xl font-bold tracking-tight transition-opacity duration-300 hover:opacity-80" >
                         TuTurnoYa
                     </Link>
-                    <div className="hidden md:flex items-center gap-8">
+
+                    <div className="hidden md:flex items-center gap-3">
                         <NavLinks links={links} pathname={pathname} />
                         <UserSection barbero={barbero} usuario={usuario} onLogout={cerrarSesion} />
                     </div>
+
                     <HamburgerButton abierto={drawerAbierto} onClick={toggleDrawer} />
                 </div>
             </nav>
+
             <MobileDrawer abierto={drawerAbierto} links={links} pathname={pathname} barbero={barbero} usuario={usuario} onClose={cerrarDrawer} onLogout={cerrarSesion} />
         </>
     )

@@ -1,18 +1,20 @@
 import { useState } from 'react'
 
+// Necesitamos esta función para transformar los horarios y trabajarlos mejor
 const toMinutes = (hhmm) => {
     const [h, m] = hhmm.split(':').map(Number)
     return h * 60 + m
 }
 
-const DIAS_LABORABLES = [2, 3, 4, 5, 6] // Mar a Sáb (los lunes no se atiende)
+const DIAS_LABORABLES = [2, 3, 4, 5, 6] // Mar a Sáb (Consideramos que no abren los lunes)
 
+// Necesitamos obtener la hora
 function hoyArgentina() {
     return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' })
 }
 
-function esDiaLaborable(iso) {
-    return DIAS_LABORABLES.includes(new Date(iso + 'T00:00:00').getDay())
+function esDiaLaborable(fecha) {
+    return DIAS_LABORABLES.includes(new Date(fecha + 'T00:00:00').getDay())
 }
 
 export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, onSiguiente }) {
@@ -22,55 +24,48 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
 
     const [errorDia, setErrorDia] = useState('')
 
+    // Filtramos los horarios de acuerdo a la fecha que el cliente elija 
     const horariosFiltrados = form.fecha === hoy
-        ? horarios.filter(h => toMinutes(h) > ahoraMin)
+        ? horarios.filter(h => toMinutes(h) > ahoraMin) //Filtramos las horas que ya pasaron así no se reserva un horario que ya pasó
         : horarios
 
-    function handleFecha(iso) {
-        if (!iso) return
-        if (!esDiaLaborable(iso)) {
+    function handleFecha(fecha) {
+        if (!fecha) return
+        if (!esDiaLaborable(fecha)) {
             setErrorDia('Solo podés reservar de martes a sábado.')
             onFecha('')
             onHora('')
             return
         }
         setErrorDia('')
-        onFecha(iso)
+        onFecha(fecha)
         onHora('')
     }
 
     return (
-        <div className="space-y-7">
-
-            {/* Selector de fecha */}
+        <div className="space-y-5">
             <div>
-                <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-3">Fecha</p>
+                <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-1 md:mb-2">Fecha</p>
 
-                <input
-                    type="date"
-                    min={hoy}
-                    value={form.fecha}
-                    onChange={e => handleFecha(e.target.value)}
-                    className="w-full border border-[#e8e2d8] bg-[#faf8f5] text-[#1e2535] rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#1e2535] transition-colors cursor-pointer"
-                />
+                <input type="date" min={hoy} value={form.fecha} onChange={e => handleFecha(e.target.value)} className="w-full border border-[#e8e2d8] bg-[#faf8f5] text-[#1e2535] rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#1e2535] transition-colors cursor-pointer" />
 
                 {errorDia && (
                     <p className="text-xs text-red-400 mt-2">{errorDia}</p>
                 )}
             </div>
 
-            {/* Selector de horario */}
+            {/* Filtramos los horarios por la fecha */}
             {form.fecha && horariosFiltrados.length > 0 && (
                 <div>
-                    <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-3">Horario disponible</p>
-                    <div className="grid grid-cols-5 gap-2">
-                        {horariosFiltrados.map((h) => (
-                            <button key={h} onClick={() => onHora(h)} className={`py-2.5 rounded-full border text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                                form.hora === h
+                    <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-1 md:mb-2 md:mt-3">Horario disponible</p>
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                        {horariosFiltrados.map((horario) => (
+                            <button key={horario} onClick={() => onHora(horario)} className={`py-2.5 rounded-full border text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                                form.hora === horario
                                     ? 'border-[#1e2535] bg-[#1e2535] text-white'
                                     : 'border-[#e8e2d8] bg-[#faf8f5] text-[#1e2535] hover:border-[#c8c0b0] hover:bg-white'
                                 }`}>
-                                {h}
+                                {horario}
                             </button>
                         ))}
                     </div>
@@ -91,11 +86,11 @@ export default function PasoFecha({ form, horarios, onFecha, onHora, onAtras, on
             )}
 
             {/* Navegación */}
-            <div className="flex gap-3">
-                <button onClick={onAtras} className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-3.5 rounded-full font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e2535] transition-colors">
+            <div className="flex gap-3 md:mx-15">
+                <button onClick={onAtras} className="cursor-pointer flex-1 border border-[#e8e2d8] text-[#8a8070] py-2.5 md:py-3.5 rounded-full font-semibold text-sm hover:border-[#c8c0b0] hover:text-[#1e2535] transition-colors">
                     Atrás
                 </button>
-                <button disabled={!form.fecha || !form.hora} onClick={onSiguiente} className="cursor-pointer flex-1 bg-[#1e2535] text-white py-3.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors">
+                <button disabled={!form.fecha || !form.hora} onClick={onSiguiente} className="cursor-pointer flex-1 bg-[#1e2535] text-white py-2.5 md:py-3.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors">
                     Continuar
                 </button>
             </div>

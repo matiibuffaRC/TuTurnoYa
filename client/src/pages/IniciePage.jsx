@@ -141,7 +141,7 @@ export default function ReservarTurno() {
 
                 <PasoIndicador pasoActual={paso} />
 
-                <div className="bg-white rounded-2xl border border-[#e8e2d8] shadow-sm p-7">
+                <div className="bg-white rounded-3xl border border-[#e8e2d8] shadow-sm p-7">
                     {paso === 0 && (<PasoSucursal sucursales={sucursales} barberos={barberos} form={form} onSucursal={handleSucursal} onBarbero={handleBarbero} onSiguiente={() => setPaso(1)} /> )}
                     {paso === 1 && (<PasoServicio servicios={servicios} form={form} onServicio={(id) => { actualizarCampo('servicioId', id); handleServicio() }} onAtras={() => setPaso(0)} onSiguiente={() => setPaso(2)} />)}
                     {paso === 2 && (<PasoFecha form={form} horarios={horarios} onFecha={handleFecha} onHora={(hora) => actualizarCampo('hora', hora)} onAtras={() => setPaso(1)} onSiguiente={() => setPaso(3)} /> )}

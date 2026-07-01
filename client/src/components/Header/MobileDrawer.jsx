@@ -27,7 +27,7 @@ export default function MobileDrawer({ abierto, links, pathname, barbero, usuari
                     <div className="border-t border-white/10 mt-2 pt-2">
                         {sesionActiva ? (
                             <>
-                                <p className="px-4 py-2 text-xs text-amber-400 font-semibold">
+                                <p className="px-4 py-2 text-xs text-amber-400 font-semibold ">
                                     {nombreCompleto}
                                 </p>
                                 <button onClick={() => { onLogout(); onClose() }} className="w-full text-left px-4 py-3 rounded-xl text-sm text-white/50 hover:text-white hover:bg-white/5 transition-all cursor-pointer">

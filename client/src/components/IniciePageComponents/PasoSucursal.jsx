@@ -35,20 +35,21 @@ export default function PasoSucursal({ sucursales, barberos, form, onSucursal, o
     return (
         <div className="space-y-7">
             <div>
-                <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-1">
+                <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-1 md:mb-2">
                     Sucursal
                 </p>
 
                 <div className="space-y-2">
                 {sucursales.map((sucursal) => (
                     <button key={sucursal.id} onClick={() => onSucursal(String(sucursal.id))} className={`w-full text-left px-5 py-4 rounded-xl border transition-all duration-200 cursor-pointer ${ form.sucursalId === String(sucursal.id) ? "border-[#1e2535] bg-[#1e2535] text-white" : "border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white" }`} >
-                        <p className={`font-semibold text-sm ${ form.sucursalId === String(sucursal.id) ? "text-white" : "text-[#1e2535]" }`}>
+                        <p className={`font text-sm ${ form.sucursalId === String(sucursal.id) ? "text-white" : "text-[#1e2535]" }`}>
                             {sucursal.nombre}
                         </p>
 
-                        <p className={`text-xs mt-1 flex items-center gap-1 ${ form.sucursalId === String(sucursal.id) ? "text-white/70" : "text-[#8a8070]" }`} >
+                        <p className={`text-xs mt-1 flex items-center gap-1 ${ form.sucursalId === String(sucursal.id) ? "text-white" : "text-[#8a8070]" }`} >
                             <IconPin />
-                            {sucursal.direccion} · {sucursal.horarioApertura}–{sucursal.horarioCierre}
+                            <span> {sucursal.direccion} · </span>
+                            <span className='font-bold'>  {sucursal.horarioApertura}–{sucursal.horarioCierre} </span>
                         </p>
                     </button>
                 ))}
@@ -57,17 +58,17 @@ export default function PasoSucursal({ sucursales, barberos, form, onSucursal, o
 
             {barberos.length > 0 && (
                 <div>
-                    <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-1">
+                    <p className="text-xs font-bold tracking-widest uppercase text-[#8a8070] mb-1 md:mb-2">
                         Barbero
                     </p>
 
-                    <div className="grid grid-cols-2 gap-2">
-                        {barberos.map((b) => {
-                        const cerrada = !b.agendaAbierta
-                        const seleccionado = form.barberoId === String(b.id)
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {barberos.map((barbero) => {
+                        const cerrada = !barbero.agendaAbierta
+                        const seleccionado = form.barberoId === String(barbero.id)
 
                         return (
-                            <button key={b.id} onClick={() => !cerrada && onBarbero(String(b.id))} disabled={cerrada} className={`px-4 py-4 rounded-2xl border transition-all duration-200 relative ${ cerrada ? "border-[#e8e2d8] bg-[#f5f3ef] opacity-60 cursor-not-allowed" : seleccionado ? "border-[#1e2535] bg-[#1e2535] cursor-pointer" : "border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white cursor-pointer" }`} >
+                            <button key={barbero.id} onClick={() => !cerrada && onBarbero(String(barbero.id))} disabled={cerrada} className={`px-4 py-4 rounded-2xl border transition-all duration-200 relative ${ cerrada ? "border-[#e8e2d8] bg-[#f5f3ef] opacity-60 cursor-not-allowed" : seleccionado ? "border-[#1e2535] bg-[#1e2535] cursor-pointer" : "border-[#e8e2d8] bg-[#faf8f5] hover:border-[#c8c0b0] hover:bg-white cursor-pointer" }`} >
                                 <div className="flex items-center gap-3">
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${ cerrada ? "bg-[#e8e2d8] text-[#a09880]" : seleccionado ? "bg-white/20 text-white" : "bg-[#1e2535]/8 text-[#1e2535]" }`} >
                                         {cerrada ? <IconLock /> : <IconScissors />}
@@ -75,7 +76,7 @@ export default function PasoSucursal({ sucursales, barberos, form, onSucursal, o
 
                                     <div className="flex flex-col items-start">
                                         <p className={`font-semibold text-sm text-left ${ seleccionado ? "text-white" : "text-[#1e2535]" }`} >
-                                            {b.nombre} {b.apellido}
+                                            {barbero.nombre} {barbero.apellido}
                                         </p>
                                     {cerrada && (
                                         <p className="text-xs text-red-500 font-medium">
@@ -98,7 +99,7 @@ export default function PasoSucursal({ sucursales, barberos, form, onSucursal, o
                 </div>
             )}
 
-            <button disabled={!form.sucursalId || !form.barberoId || agendaCerrada} onClick={onSiguiente} className="w-full bg-[#1e2535] text-white py-3.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors cursor-pointer">
+            <button disabled={!form.sucursalId || !form.barberoId || agendaCerrada} onClick={onSiguiente} className="w-full bg-[#1e2535] text-white py-2.5 rounded-full font-semibold text-sm disabled:opacity-30 hover:bg-[#2d3748] transition-colors cursor-pointer">
                 Continuar
             </button>
         </div>

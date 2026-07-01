@@ -7,8 +7,11 @@ export default function UserSection({ barbero, usuario, onLogout }) {
     if (sesionActiva) {
         return (
             <div className="flex items-center gap-3">
-                <span className="text-sm text-amber-400 font-semibold">{nombre}</span>
-                <button onClick={onLogout} className="text-xs text-white/50 hover:text-white/90 transition-colors cursor-pointer">
+                <div className="px-3 py-1 rounded-full bg-white/10 text-amber-400 text-sm font-semibold select-none">
+                    {nombre}
+                </div>
+
+                <button onClick={onLogout} className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer" >
                     Salir
                 </button>
             </div>
@@ -16,7 +19,7 @@ export default function UserSection({ barbero, usuario, onLogout }) {
     }
 
     return (
-        <Link to="/admins-panel" className="text-sm bg-white/10 hover:bg-white/20 text-white px-4 py-1.5 rounded-full font-medium transition-colors">
+        <Link to="/admins-panel" className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors" >
             Soy peluquero
         </Link>
     )
