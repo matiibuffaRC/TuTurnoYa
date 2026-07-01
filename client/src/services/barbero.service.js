@@ -39,7 +39,12 @@ export const createBarbero = async (data, token) => {
         body: JSON.stringify(data),
     });
 
-    return response.json();
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(result.error || "No se pudo crear el barbero");
+    }
+
+    return result;
 };
 
 export const updateBarbero = async (barberoId, data, token) => {
@@ -52,18 +57,29 @@ export const updateBarbero = async (barberoId, data, token) => {
         body: JSON.stringify(data),
     });
 
-    return response.json();
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(result.error || "No se pudo actualizar el barbero");
+    }
+
+    return result;
 };
 
 export const deleteBarbero = async (barberoId, token) => {
     const response = await fetch(`${BASE}/barberos/${barberoId}`, {
-        method: "DELETE",
-        headers: {
-        Authorization: `Bearer ${token}`,
-        },
-    });
+            method: "DELETE",
+            headers: {
+            Authorization: `Bearer ${token}`,
+            },
+        }
+    );
 
-    return response.json();
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(result.error || "No se pudo eliminar el barbero");
+    }
+
+    return result;
 };
 
 // Con esta función un barbero puede abrir o cerrar su agenda
@@ -74,8 +90,7 @@ export const toggleAgenda = async (barberoId, token) => {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-            }
-        );
+        });
 
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
@@ -118,18 +133,18 @@ export const updateHorarios = async (barberoId, horarios, token) => {
         };
 
         const response = await fetch(`${BASE}/barberos/${barberoId}/horarios`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
         });
 
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-        throw new Error(data.error || `Error HTTP: ${response.status}`);
+            throw new Error(data.error || `Error HTTP: ${response.status}`);
         }
 
         return data;
