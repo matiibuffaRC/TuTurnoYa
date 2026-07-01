@@ -156,7 +156,9 @@ const actualizarBarbero = async (req, res) => {
                 nombre: nombre || barbero.nombre,
                 apellido: apellido || barbero.apellido,
                 telefono: telefono || barbero.telefono,
-                sucursalId: sucursalId ? Number(sucursalId) : barbero.sucursalId,
+                sucursal: {
+                    connect: { id: sucursalId ? Number(sucursalId) : barbero.sucursalId }
+                },
                 activo: activo !== undefined ? activo : barbero.activo,
                 horarioEntrada: newHorarioEntrada,
                 horarioSalida: newHorarioSalida,
