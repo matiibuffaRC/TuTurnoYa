@@ -6,7 +6,7 @@ export default function UserSection({ barbero, usuario, onLogout }) {
 
     if (sesionActiva) {
         return (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-5 pr-5">
                 <div className="px-3 py-1 rounded-full bg-white/10 text-amber-400 text-sm font-semibold select-none">
                     {nombre}
                 </div>

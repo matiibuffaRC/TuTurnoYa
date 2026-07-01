@@ -18,7 +18,7 @@ export default function Navbar() {
                         TuTurnoYa
                     </Link>
 
-                    <div className="hidden md:flex items-center gap-3">
+                    <div className="hidden md:flex items-center gap-5">
                         <NavLinks links={links} pathname={pathname} />
                         <UserSection barbero={barbero} usuario={usuario} onLogout={cerrarSesion} />
                     </div>
