@@ -55,11 +55,11 @@ export default function MisTurnos() {
         setLoading(false);
     };
 
-    const cancelar = async (id) => {
+    const cancelar = async (idTurno) => {
         if (!confirm("¿Desea cancelar este turno?")) return;
         // Llamamos la función desde "api.js"
-        await cancelarTurno(id);
-        setTurnos((prev) => prev.filter((t) => t.id !== id));
+        await cancelarTurno(idTurno);
+        setTurnos((prev) => prev.filter((turno) => turno.id !== idTurno));
     };
 
     return (
@@ -113,46 +113,47 @@ export default function MisTurnos() {
                 }
 
                 <div className="space-y-3">
-                {turnos.map((turno) => (
-                    <div key={turno.id} className="bg-white rounded-2xl border border-[#e8e2d8] px-6 py-5" >
-                        <div className="flex items-start justify-between gap-4">
-                            <div className="space-y-2 flex-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-base font-black text-[#1e2535]">
-                                        {turno.hora}
-                                    </span>
-                                    <span className="text-[#c0b8a8]">·</span>
-                                    <span className="text-sm text-[#8a8070] font-medium">
-                                        {formatearFecha(turno.fecha)}
-                                    </span>
+                    {turnos.map((turno) => (
+                        <div key={turno.id} className="bg-white rounded-2xl border border-[#e8e2d8] px-6 py-5" >
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="space-y-2 flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-base font-black text-[#1e2535]">
+                                            {turno.hora}
+                                        </span>
+                                        <span className="text-[#c0b8a8]">·</span>
+                                        <span className="text-sm text-[#8a8070] font-medium">
+                                            {formatearFecha(turno.fecha)}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-0.5">
+                                        <p className="text-sm text-[#1e2535]">
+                                        <span className="font-semibold">
+                                            {turno.barbero.nombre} {turno.barbero.apellido}
+                                        </span>
+                                        <span className="text-[#8a8070]">
+                                            {" "}
+                                            — {turno.barbero.sucursal.nombre}
+                                        </span>
+                                        </p>
+                                        <p className="text-xs text-[#8a8070]">
+                                            {turno.barbero.sucursal.direccion}
+                                        </p>
+                                        <p className="text-xs text-[#8a8070]">
+                                            {turno.servicio.tipo} · {turno.servicio.duracion} min ·{" "}
+                                        <span className="font-bold text-[#1e2535]">
+                                            ${turno.servicio.precio.toLocaleString("es-AR")}
+                                        </span>
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-sm text-[#1e2535]">
-                                    <span className="font-semibold">
-                                        {turno.barbero.nombre} {turno.barbero.apellido}
-                                    </span>
-                                    <span className="text-[#8a8070]">
-                                        {" "}
-                                        — {turno.barbero.sucursal.nombre}
-                                    </span>
-                                    </p>
-                                    <p className="text-xs text-[#8a8070]">
-                                        {turno.barbero.sucursal.direccion}
-                                    </p>
-                                    <p className="text-xs text-[#8a8070]">
-                                        {turno.servicio.tipo} · {turno.servicio.duracion} min ·{" "}
-                                    <span className="font-bold text-[#1e2535]">
-                                        ${turno.servicio.precio.toLocaleString("es-AR")}
-                                    </span>
-                                    </p>
-                                </div>
+                                <button onClick={() => cancelar(turno.id)} className="cursor-pointer text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap" >
+                                    Cancelar
+                                </button>
                             </div>
-                            <button onClick={() => cancelar(turno.id)} className="cursor-pointer text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap" >
-                                Cancelar
-                            </button>
                         </div>
-                    </div>
-                ))}
+                        ))
+                    }
                 </div>
             </div>
         </div>

@@ -1,153 +1,176 @@
-import { useEffect, useState } from 'react'
-import { getSucursales } from '../services/sucursal.service'
-import { getBarberos, getServiciosBarbero } from '../services/barbero.service'
-import { getDisponibles, crearTurno } from '../services/turno.service'
-
+import { useEffect, useRef, useState } from "react";
+import { getSucursales } from "../services/sucursal.service";
+import { getBarberos, getServiciosBarbero } from "../services/barbero.service";
+import { getDisponibles, crearTurno } from "../services/turno.service";
 
 // Importamos los componentes desde las vistas de los usuarios
-import PasoIndicador from '../components/IniciePageComponents/PasoIndicador'
-import PasoSucursal from '../components/IniciePageComponents/PasoSucursal'
-import PasoServicio from '../components/IniciePageComponents/PasoServicio'
-import PasoFecha from '../components/IniciePageComponents/PasoFecha'
-import PasoDatos from '../components/IniciePageComponents/PasoDatos'
-import Confirmacion from '../components/IniciePageComponents/Confirmacion'
+import PasoIndicador from "../components/IniciePageComponents/PasoIndicador";
+import PasoSucursal from "../components/IniciePageComponents/PasoSucursal";
+import PasoServicio from "../components/IniciePageComponents/PasoServicio";
+import PasoFecha from "../components/IniciePageComponents/PasoFecha";
+import PasoDatos from "../components/IniciePageComponents/PasoDatos";
+import Confirmacion from "../components/IniciePageComponents/Confirmacion";
 
 const FORM_INICIAL = {
-    sucursalId: '',
-    barberoId: '',
-    fecha: '',
-    hora: '',
-    servicioId: '',
-    nombre: '',
-    apellido: '',
-    email: '',
-}
+    sucursalId: "",
+    barberoId: "",
+    fecha: "",
+    hora: "",
+    servicioId: "",
+    nombre: "",
+    apellido: "",
+    email: "",
+};
 
 export default function ReservarTurno() {
-    const [paso, setPaso] = useState(0)
-    const [sucursales, setSucursales] = useState([])
-    const [barberos, setBarberos] = useState([])
-    const [servicios, setServicios] = useState([])
-    const [horarios, setHorarios] = useState([])
+    const [paso, setPaso] = useState(0);
+    const [sucursales, setSucursales] = useState([]);
+    const [barberos, setBarberos] = useState([]);
+    const [servicios, setServicios] = useState([]);
+    const [horarios, setHorarios] = useState([]);
 
-    const [form, setForm] = useState(FORM_INICIAL)
-    const [turnoConfirmado, setTurnoConfirmado] = useState(null)
-    const [error, setError] = useState('')
+    const [form, setForm] = useState(FORM_INICIAL);
+    const [turnoConfirmado, setTurnoConfirmado] = useState(null);
+    const [error, setError] = useState("");
+    const sucursalesCargadasRef = useRef(false);
+    const serviciosPorBarberoRef = useRef({});
 
     // Una vez que montamos la vista hacemos una petición al servidor para obtener las sucursales
     useEffect(() => {
-        getSucursales().then(setSucursales)
+        if (sucursalesCargadasRef.current) return;
+        sucursalesCargadasRef.current = true;
+        getSucursales().then(setSucursales);
     }, []);
-    
 
     // Actualizamos el campo seleccionado con el valor ingresado, si es "" es para vaciar el valor
     const actualizarCampo = (field, value) => {
         setForm((formAnterior) => ({
-            ...formAnterior,
-            [field]: value,
-        }))
-    }
+        ...formAnterior,
+        [field]: value,
+        }));
+    };
 
     // Seleccionamos una sucursal
     const handleSucursal = async (id) => {
-        actualizarCampo('sucursalId', id)
-        //  Limpiamos la selección de barberos
-        actualizarCampo('barberoId', '')
-        // Hacemos la petición para obtener a todos los baberos de dicha sucursal
-        setBarberos(await getBarberos(id)) // La id que tenemos que usar es el de LA SUCURSAL SELECCIONADA
-    }
+        actualizarCampo("sucursalId", id);
+        actualizarCampo("barberoId", "");
+        actualizarCampo("servicioId", "");
+        actualizarCampo("hora", "");
+        actualizarCampo("fecha", "");
+        setHorarios([]);
+        setServicios([]);
+        setBarberos(await getBarberos(id));
+    };
 
-    const handleBarbero = async (id) => {
-        actualizarCampo('barberoId', id)
-        
-        actualizarCampo('servicioId', '')
-        actualizarCampo('hora', '')
-        actualizarCampo('fecha', '')
-        setHorarios([])
-        // Hacemos la petición para obtener los servicios de cada barbero
-        const serviciosBarbero = await getServiciosBarbero(id)
-        setServicios(serviciosBarbero || [])
-    }
+    const handleBarbero = (id) => {
+        actualizarCampo("barberoId", id);
+        actualizarCampo("servicioId", "");
+        actualizarCampo("hora", "");
+        actualizarCampo("fecha", "");
+        setHorarios([]);
+        setServicios([]);
+    };
+
+    const cargarServiciosBarbero = async (barberoId) => {
+        if (!barberoId) return;
+
+        const cache = serviciosPorBarberoRef.current[barberoId];
+        if (cache) {
+            setServicios(cache);
+            return;
+        }
+
+        const serviciosBarbero = await getServiciosBarbero(barberoId);
+        const lista = serviciosBarbero || [];
+        serviciosPorBarberoRef.current[barberoId] = lista;
+        setServicios(lista);
+    };
 
     const handleFecha = async (fecha) => {
-        actualizarCampo('fecha', fecha)
-        // El formato de la fecha es AÑO/MES/DIA 
-        console.log(fecha)
+        actualizarCampo("fecha", fecha);
+        // El formato de la fecha es AÑO/MES/DIA
+        console.log(fecha);
         // Una vez que se cambia la fecha que se elija, se "reinicia la hora preelegida"
-        actualizarCampo('hora', '')
+        actualizarCampo("hora", "");
 
         // Validamos que se haya elegido un barbero y un servicio
         if (form.barberoId && form.servicioId) {
-            setHorarios(await getDisponibles(form.barberoId, fecha, form.servicioId))
+            setHorarios(await getDisponibles(form.barberoId, fecha, form.servicioId));
         }
-    }
+    };
 
     const handleServicio = () => {
-        actualizarCampo('hora', '')
-        actualizarCampo('fecha', '')
-        setHorarios([])
-    }
+        actualizarCampo("hora", "");
+        actualizarCampo("fecha", "");
+        setHorarios([]);
+    };
 
     const handleConfirmar = async () => {
-        setError('')
-        
-        const res = await crearTurno(
-            {
-                fecha: form.fecha,
-                hora: form.hora,
-                nombre: form.nombre,
-                apellido: form.apellido,
-                email: form.email,
-                barberoId: Number(form.barberoId),
-                servicioId: Number(form.servicioId),
-            }
-        )
+        setError("");
+
+        const res = await crearTurno({
+            fecha: form.fecha,
+            hora: form.hora,
+            nombre: form.nombre,
+            apellido: form.apellido,
+            email: form.email,
+            barberoId: Number(form.barberoId),
+            servicioId: Number(form.servicioId),
+        });
 
         if (res.error) {
-            setError(res.error)
-            return
+        setError(res.error);
+        return;
         }
 
-        setTurnoConfirmado(res)
-    }
+        setTurnoConfirmado(res);
+    };
 
     // Función para reservar otro turno
     const handleNuevoTurno = () => {
-        setTurnoConfirmado(null)
-        setForm(FORM_INICIAL)
-        setPaso(0)
-    }
+        setTurnoConfirmado(null);
+        setForm(FORM_INICIAL);
+        setPaso(0);
+    };
 
     if (turnoConfirmado) {
         return (
             <Confirmacion turno={turnoConfirmado} onNuevoTurno={handleNuevoTurno} />
-        )
+        );
     }
 
     return (
         <div className="min-h-[calc(100dvh-80px)] bg-[#f7f4ef] montserrat-alternates">
             <div className="max-w-xl mx-auto px-5 py-14 pt-6 pb-5">
                 <div className="mb-8">
-                    <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700">
-                        Reserva online
-                    </p>
-                    <h1 className="text-3xl font-black text-[#1e2535] leading-tight">
-                        Reservar turno
-                    </h1>
-                    <p className="text-[#8a8070] text-xs">
-                        Seguí los pasos para confirmar tu reserva.
-                    </p>
+                <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700">
+                    Reserva online
+                </p>
+                <h1 className="text-3xl font-black text-[#1e2535] leading-tight">
+                    Reservar turno
+                </h1>
+                <p className="text-[#8a8070] text-xs">
+                    Seguí los pasos para confirmar tu reserva.
+                </p>
                 </div>
 
                 <PasoIndicador pasoActual={paso} />
 
                 <div className="bg-white rounded-3xl border border-[#e8e2d8] shadow-sm p-7">
-                    {paso === 0 && (<PasoSucursal sucursales={sucursales} barberos={barberos} form={form} onSucursal={handleSucursal} onBarbero={handleBarbero} onSiguiente={() => setPaso(1)} /> )}
-                    {paso === 1 && (<PasoServicio servicios={servicios} form={form} onServicio={(id) => { actualizarCampo('servicioId', id); handleServicio() }} onAtras={() => setPaso(0)} onSiguiente={() => setPaso(2)} />)}
-                    {paso === 2 && (<PasoFecha form={form} horarios={horarios} onFecha={handleFecha} onHora={(hora) => actualizarCampo('hora', hora)} onAtras={() => setPaso(1)} onSiguiente={() => setPaso(3)} /> )}
-                    {paso === 3 && (<PasoDatos form={form} error={error} onChange={actualizarCampo} onAtras={() => setPaso(2)} onConfirmar={handleConfirmar} />)}
+                {paso === 0 && (
+                    <PasoSucursal sucursales={sucursales} barberos={barberos} form={form} onSucursal={handleSucursal} onBarbero={handleBarbero} onSiguiente={async () => {
+                        if (form.barberoId) {
+                            await cargarServiciosBarbero(form.barberoId);
+                        }
+                        setPaso(1);
+                    }}
+                    />
+                )}
+                {paso === 1 && (<PasoServicio servicios={servicios} form={form} onServicio={(id) => { actualizarCampo("servicioId", id); handleServicio(); }} onAtras={() => setPaso(0)} onSiguiente={() => setPaso(2)} />)}
+                {paso === 2 && (<PasoFecha form={form} horarios={horarios} onFecha={handleFecha} onHora={(hora) => actualizarCampo("hora", hora)} onAtras={() => setPaso(1)} onSiguiente={() => setPaso(3)} /> )}
+                {paso === 3 && (<PasoDatos form={form} error={error} onChange={actualizarCampo} onAtras={() => setPaso(2)} onConfirmar={handleConfirmar} /> )}
                 </div>
             </div>
         </div>
-    )
+    );
 }
